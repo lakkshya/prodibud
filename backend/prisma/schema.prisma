@@ -1,0 +1,65 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url = env("DATABASE_URL")
+    shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+    id String @id @default(uuid())
+    name String 
+    email String @unique
+    password String
+    sentEmails Email[] @relation("SentEmails")
+    receivedEmails Recipient[]
+    ccEmails CCRecipient[]
+    bccEmails BCCRecipient[]
+}
+
+model Email {
+    id String @id @default(uuid())
+    subject String 
+    body String
+    sender User @relation("SentEmails", fields: [senderId], references: [id])
+    senderId String
+    recipients Recipient[]
+    cc CCRecipient[]
+    bcc BCCRecipient[]
+    attachments Attachment[]
+    createdAt DateTime @default(now())
+    threadId String? //optional, for replies/thread view
+}
+
+model Attachment {
+    id String @id @default(uuid())
+    url String
+    email Email @relation(fields: [emailId], references: [id])
+    emailId String
+}
+
+model Recipient {
+    id String @id @default(uuid())
+    email Email @relation(fields: [emailId], references: [id])
+    emailId String
+    user User @relation(fields: [userId], references: [id])
+    userId String
+}
+
+model CCRecipient {
+    id String @id @default(uuid())
+    email Email @relation(fields: [emailId], references: [id])
+    emailId String
+    user User @relation(fields: [userId], references: [id])
+    userId String
+}
+
+model BCCRecipient {
+    id String @id @default(uuid())
+    email Email @relation(fields: [emailId], references: [id])
+    emailId String
+    user User @relation(fields: [userId], references: [id])
+    userId String
+}
