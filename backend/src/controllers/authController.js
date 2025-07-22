@@ -4,7 +4,7 @@ const generateToken = require("../utils/generateToken");
 
 const prisma = new PrismaClient();
 
-exports.signup = async (req, res) => {
+const signup = async (req, res) => {
   const { name, email, phoneNumber, dateOfBirth, password } = req.body;
 
   try {
@@ -43,7 +43,7 @@ exports.signup = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
+const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -68,3 +68,5 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: "Login failed", error: err.message });
   }
 };
+
+module.exports = { signup, login };

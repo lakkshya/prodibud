@@ -44,25 +44,28 @@ model Attachment {
 }
 
 model Recipient {
-    id      String @id @default(uuid())
-    email   Email  @relation(fields: [emailId], references: [id])
+    id      String  @id @default(uuid())
+    email   Email   @relation(fields: [emailId], references: [id])
     emailId String
-    user    User   @relation(fields: [userId], references: [id])
+    user    User    @relation(fields: [userId], references: [id])
     userId  String
+    read    Boolean @default(false)
 }
 
 model CCRecipient {
-    id      String @id @default(uuid())
-    email   Email  @relation(fields: [emailId], references: [id])
+    id      String  @id @default(uuid())
+    email   Email   @relation(fields: [emailId], references: [id])
     emailId String
-    user    User   @relation(fields: [userId], references: [id])
+    user    User    @relation(fields: [userId], references: [id])
     userId  String
+    read    Boolean @default(false)
 }
 
 model BCCRecipient {
-    id      String @id @default(uuid())
-    email   Email  @relation(fields: [emailId], references: [id])
+    id      String  @id @default(uuid())
+    email   Email   @relation(fields: [emailId], references: [id])
     emailId String
-    user    User   @relation(fields: [userId], references: [id])
+    user    User    @relation(fields: [userId], references: [id])
     userId  String
+    read    Boolean @default(false)
 }

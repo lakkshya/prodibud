@@ -30,7 +30,7 @@ const validateRecipients = async (req, res) => {
       cc: categorize(cc),
       bcc: categorize(bcc),
     });
-  } catch (error) {
+  } catch (err) {
     res.status(500).json({ error: "Failed to validate email" });
   }
 };
@@ -83,9 +83,7 @@ const sendEmail = async (req, res) => {
 
     res.status(201).json({ message: "Email sent successfully", email });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Failed to send email", error: err.message });
+    res.status(500).json({ error: "Failed to send email" });
   }
 };
 
@@ -108,9 +106,7 @@ const getInbox = async (req, res) => {
 
     res.json(inbox);
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Failed to fetch inbox", error: err.message });
+    res.status(500).json({ error: "Failed to fetch inbox" });
   }
 };
 
@@ -131,10 +127,40 @@ const getSent = async (req, res) => {
 
     res.json(sentEmails);
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Failed to fetch sent emails", error: err.message });
+    res.status(500).json({ error: "Failed to fetch sent emails" });
   }
 };
 
-module.exports = { validateRecipients, sendEmail, getInbox, getSent };
+const markAsRead = async (req, res) => {
+  const { emailId } = req.params;
+  const userId = req.user.id;
+
+  try {
+    await prisma.recipient.updateMany({
+      where: { emailId, userId },
+      data: { read: true },
+    });
+
+    await prisma.cCRecipient.updateMany({
+      where: { emailId, userId },
+      data: { read: true },
+    });
+
+    await prisma.bCCRecipient.updateMany({
+      where: { emailId, userId },
+      data: { read: true },
+    });
+
+    res.status(200).json({ message: "Email marked as read" });
+  } catch (err) {
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+module.exports = {
+  validateRecipients,
+  sendEmail,
+  getInbox,
+  getSent,
+  markAsRead,
+};
