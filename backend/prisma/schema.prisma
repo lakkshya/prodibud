@@ -22,17 +22,24 @@ model User {
 }
 
 model Email {
-    id          String         @id @default(uuid())
-    subject     String         @db.VarChar(255)
-    body        String         @db.Text
-    sender      User           @relation("SentEmails", fields: [senderId], references: [id])
-    senderId    String
-    recipients  Recipient[]
-    cc          CCRecipient[]
-    bcc         BCCRecipient[]
-    attachments Attachment[]
-    createdAt   DateTime       @default(now())
-    threadId    String? //optional, for replies/thread view
+    id               String         @id @default(uuid())
+    subject          String         @db.VarChar(255)
+    body             String         @db.Text
+    sender           User           @relation("SentEmails", fields: [senderId], references: [id])
+    senderId         String
+    recipients       Recipient[]
+    cc               CCRecipient[]
+    bcc              BCCRecipient[]
+    attachments      Attachment[]
+    createdAt        DateTime       @default(now())
+    threadId         String? //optional, for replies/thread view
+    isDraft          Boolean        @default(false)
+    isDeleted        Boolean        @default(false)
+    //store draft specific recipient and attachment info temporarily
+    draftRecipients  Json? //store array of userId
+    draftCC          Json?
+    draftBCC         Json?
+    draftAttachments Json? //store array of {filename, url}
 }
 
 model Attachment {

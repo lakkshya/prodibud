@@ -1,6 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcrypt");
-const generateToken = require("../utils/generateToken");
+const generateToken = require("../../utils/generateToken");
 
 const prisma = new PrismaClient();
 
@@ -39,7 +39,7 @@ const signup = async (req, res) => {
       token,
     });
   } catch (err) {
-    res.status(500).json({ message: "Signup failed", error: err.message });
+    res.status(500).json({ error: "Signup failed" });
   }
 };
 
@@ -65,7 +65,7 @@ const login = async (req, res) => {
       token,
     });
   } catch (err) {
-    res.status(500).json({ message: "Login failed", error: err.message });
+    res.status(500).json({ error: "Login failed" });
   }
 };
 
