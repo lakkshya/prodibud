@@ -4,6 +4,23 @@ const generateToken = require("../../utils/generateToken");
 
 const prisma = new PrismaClient();
 
+const checkEmail = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) return res.status(400).json({ message: "Email is required" });
+
+  try {
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) return res.status(200).json({ exists: true });
+    else return res.status(200).json({ exists: false });
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to check email" });
+  }
+};
+
 const signup = async (req, res) => {
   const { name, email, phoneNumber, dateOfBirth, password } = req.body;
 
@@ -69,4 +86,4 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { signup, login };
+module.exports = { checkEmail, signup, login };
