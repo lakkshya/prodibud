@@ -6,20 +6,19 @@
 @layer utilities {
   .bg-gold-gradient {
     background-image: linear-gradient(
-      135deg,
-      hsl(0deg 0% 83%) 0%,
-      hsl(43deg 13% 83%) 11%,
-      hsl(44deg 24% 82%) 20%,
-      hsl(44deg 35% 81%) 29%,
-      hsl(45deg 44% 81%) 37%,
-      hsl(45deg 53% 80%) 45%,
-      hsl(45deg 61% 79%) 53%,
-      hsl(46deg 68% 79%) 60%,
-      hsl(46deg 74% 78%) 68%,
-      hsl(47deg 80% 77%) 76%,
-      hsl(47deg 85% 76%) 84%,
-      hsl(48deg 90% 75%) 92%,
-      hsl(48deg 94% 74%) 100%
+      160deg,
+      hsl(0deg 0% 85%) 0%,
+      hsl(50deg 13% 85%) 11%,
+      hsl(51deg 25% 84%) 21%,
+      hsl(51deg 36% 84%) 30%,
+      hsl(52deg 46% 84%) 40%,
+      hsl(52deg 56% 83%) 49%,
+      hsl(53deg 65% 83%) 58%,
+      hsl(53deg 73% 82%) 67%,
+      hsl(54deg 81% 82%) 75%,
+      hsl(54deg 88% 81%) 84%,
+      hsl(54deg 94% 80%) 92%,
+      hsl(55deg 100% 80%) 100%
     );
   }
 }

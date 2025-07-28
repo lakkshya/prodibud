@@ -163,9 +163,4 @@ module.exports = {
   getInbox,
   getSent,
   markAsRead,
-  saveDraft,
-  getDrafts,
-  editDraft,
-  sendDraft,
-  deleteDraft,
 };
