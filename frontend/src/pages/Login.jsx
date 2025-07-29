@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { MdEmail, MdLock, MdVisibility, MdVisibilityOff } from "react-icons/md";
 import Toast from "../components/Toast";
 import Loading from "../components/Loading";
 import withMinDelay from "../utils/withMinDelay";
@@ -71,105 +72,161 @@ const Login = () => {
   if (isLoading) return <Loading text="Logging in your account..." />;
 
   return (
-    <div className="bg-gold-gradient min-h-screen flex justify-center items-center">
-      <main className="flex flex-col gap-10 bg-white px-6 py-6 md:px-15 md:py-10 mx-5 md:mx-10 rounded-4xl">
-        <h1 className="text-[1.4rem] md:text-[1.8rem] font-bold text-center">
-          Login
-        </h1>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            login();
-          }}
-          className="grid grid-cols-1 gap-8"
-        >
-          {/* Section: Account Details */}
-          <div className="space-y-6 flex flex-col">
-            <div className="space-y-2">
-              <h2 className="text-[1rem] md:text-[1.2rem] font-semibold text-gray-800">
-                Welcome Back!
-              </h2>
-              <p className="text-[0.825rem] md:text-[0.9rem] text-gray-600">
-                Login with your email and password to continue
-              </p>
+    <div className="bg-gold-gradient min-h-screen flex justify-center items-center relative overflow-hidden">
+      <main className="w-full sm:w-7/10 md:w-full lg:w-8/10 relative flex flex-col md:flex-row gap-10 bg-white/95 backdrop-blur-sm px-8 py-10 md:px-12 md:py-12 mx-5 my-10 md:mx-10 rounded-4xl shadow-2xl border border-white/50">
+        {/* Left Side - Text Content */}
+        <div className="w-full md:w-2/5 flex flex-col justify-center space-y-8 lg:pr-8">
+          {/* Logo Section */}
+          <div className="text-left">
+            <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl shadow-lg mb-4">
+              <MdEmail className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
+            <h1 className="text-[1.5rem] md:text-[2rem] font-bold text-gray-800 mb-2">
+              Welcome Back
+            </h1>
+            <p className="text-gray-600 text-[1rem] md:text-[1.2rem]">
+              Sign in to your MailBoard account
+            </p>
+          </div>
+        </div>
 
-            <div className="space-y-3">
+        {/* Right Side - Form */}
+        <div className="w-full md:w-3/5">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              login();
+            }}
+            className="grid grid-cols-1 gap-8"
+          >
+            {/* Section: Account Details */}
+
+            <div className="space-y-6">
               {/* Email */}
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={userData.email}
-                onChange={(e) => {
-                  const { name, value } = e.target;
-                  setUserData((prev) => ({ ...prev, [name]: value }));
+              <div className="space-y-2">
+                <label className="text-[0.9rem] font-medium text-gray-700 block">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <MdEmail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    value={userData.email}
+                    onChange={(e) => {
+                      const { name, value } = e.target;
+                      setUserData((prev) => ({ ...prev, [name]: value }));
 
-                  setErrors((prevErrors) => {
-                    const updatedErrors = { ...prevErrors };
-                    delete updatedErrors[name];
-                    return updatedErrors;
-                  });
-                }}
-                className="w-full text-[0.9rem] md:text-[1rem] border border-gray-300 rounded-full px-5 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-              {errors.email && (
-                <p className="text-[0.825rem] md:text-[0.875rem] text-red-600 pl-2 -mt-3">
-                  {errors.email}
-                </p>
-              )}
+                      setErrors((prevErrors) => {
+                        const updatedErrors = { ...prevErrors };
+                        delete updatedErrors[name];
+                        return updatedErrors;
+                      });
+                    }}
+                    className={`w-full pl-12 pr-4 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 ${
+                      errors.email
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-300 bg-gray-50 hover:bg-white focus:bg-white"
+                    }`}
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-[0.875rem] md:text-[0.9rem] text-red-600 flex items-center mt-1">
+                    {errors.email}
+                  </p>
+                )}
+              </div>
 
               {/* Password */}
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="Password"
-                  value={userData.password}
-                  onChange={(e) => {
-                    const { name, value } = e.target;
-                    setUserData((prev) => ({ ...prev, [name]: value }));
+              <div className="space-y-2">
+                <label className="text-[0.9rem] font-medium text-gray-700 block">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <MdLock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Enter your password"
+                    value={userData.password}
+                    onChange={(e) => {
+                      const { name, value } = e.target;
+                      setUserData((prev) => ({ ...prev, [name]: value }));
 
-                    setErrors((prevErrors) => {
-                      const updatedErrors = { ...prevErrors };
-                      delete updatedErrors[name];
-                      return updatedErrors;
-                    });
-                  }}
-                  className="w-full text-[0.9rem] md:text-[1rem] border border-gray-300 rounded-full px-5 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                />
+                      setErrors((prevErrors) => {
+                        const updatedErrors = { ...prevErrors };
+                        delete updatedErrors[name];
+                        return updatedErrors;
+                      });
+                    }}
+                    className={`w-full pl-12 pr-12 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 ${
+                      errors.password
+                        ? "border-red-300 bg-red-50"
+                        : "border-gray-300 bg-gray-50 hover:bg-white focus:bg-white"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showPassword ? (
+                      <MdVisibilityOff className="h-5 w-5" />
+                    ) : (
+                      <MdVisibility className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="text-[0.875rem] md:text-[0.9rem] text-red-600 flex items-center mt-1">
+                    {errors.password}
+                  </p>
+                )}
+              </div>
+
+              {/* Forgot Password - Future Purpose*/}
+              {/* <div className="flex justify-end">
                 <button
                   type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[0.8rem] md:text-[0.85rem] text-gray-600 focus:outline-none cursor-pointer"
+                  className="text-[0.875rem] md:text-[0.9rem] text-yellow-600 hover:text-yellow-700 font-medium transition-colors"
                 >
-                  {showPassword ? "Hide" : "Show"}
+                  Forgot your password?
                 </button>
-              </div>
-              {errors.password && (
-                <p className="text-[0.825rem] md:text-[0.875rem] text-red-600 pl-2 -mt-3">
-                  {errors.password}
-                </p>
-              )}
+              </div> */}
 
-              {/* Signup Button */}
+              {/* Login Button */}
               <button
                 type="submit"
-                className="w-full text-[0.9rem] md:text-[1rem] text-white font-semibold py-2 rounded-full transition duration-200 bg-amber-400 hover:bg-amber-500 cursor-pointer"
+                className="w-full text-[0.9rem] md:text-[1rem] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transform hover:-translate-y-0.5 hover:shadow-lg cursor-pointer"
               >
-                Login
+                Sign In to MailBoard
               </button>
+
+              {/* Sign Up Link */}
+              <div className="text-center pt-4 border-t border-gray-200">
+                <p className="text-[0.875rem] md:text-[0.9rem] text-gray-600">
+                  New to MailBoard?{" "}
+                  <button
+                    type="button"
+                    onClick={() => navigate("/signup")}
+                    className="text-yellow-600 hover:text-yellow-700 font-medium transition-colors"
+                  >
+                    Create your account
+                  </button>
+                </p>
+              </div>
             </div>
-          </div>
-        </form>
-        {toast.message && (
-          <Toast
-            message={toast.message}
-            type={toast.type}
-            onClose={hideToast}
-          />
-        )}
+          </form>
+        </div>
       </main>
+      {toast.message && (
+        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
+      )}
     </div>
   );
 };

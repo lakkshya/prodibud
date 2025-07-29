@@ -12,13 +12,13 @@ const Toast = ({ message, type, onClose }) => {
 
   return (
     <div
-      className={`fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 flex justify-between items-stretch gap-5 border shadow-lg transition-all duration-300 ${
+      className={`w-[70%] md:w-[40%] fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 flex justify-between items-stretch gap-5 border shadow-lg transition-all duration-300 ${
         type === "Success"
           ? "bg-green-100 text-green-500 border-green-500"
           : "bg-red-100 text-red-500 border-red-500"
       }`}
     >
-      <div className="px-4 py-2">{message}</div>
+      <div className="text-[0.8rem] md:text-[1rem] px-4 py-2">{message}</div>
       <button
         className={`px-4 ${
           type === "Success" ? "hover:bg-green-300" : "hover:bg-red-300"
