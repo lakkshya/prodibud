@@ -28,10 +28,8 @@ const Navbar = () => {
 
   return (
     <div className="px-5 md:px-10 py-5">
-      <div className="flex justify-between">
-        <div className="flex items-center border border-gray-500 px-4 rounded-4xl">
-          <h1 className="text-[1.2rem]">MailBoard</h1>
-        </div>
+      <div className="h-15 flex items-center justify-between">
+        <img src="./logo.png" alt="Prodibud Logo" className="h-full" />
 
         <div className="flex justify-between gap-2 sm:gap-5">
           {/* Mobile Nav */}
@@ -44,24 +42,42 @@ const Navbar = () => {
             </button>
 
             {isMobileMenuOpen && (
-              <div className="absolute right-0 mt-1 w-40 bg-white rounded-xl shadow-lg py-2 z-50">
+              <div className="w-30 absolute right-0 flex flex-col gap-1 mt-1 bg-white rounded-2xl shadow-lg p-1 z-50">
                 <NavLink
                   to="/mail"
-                  className="block px-4 py-2 text-[0.9rem] text-black hover:bg-gray-200"
+                  className={({ isActive }) =>
+                    `flex justify-center px-4 py-2 text-[0.9rem] rounded-2xl ${
+                      isActive
+                        ? "bg-gray-800 text-white"
+                        : "text-black hover:bg-gray-300"
+                    }`
+                  }
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Mail
                 </NavLink>
                 <NavLink
                   to="/kanban"
-                  className="block px-4 py-2 text-[0.9rem] text-black hover:bg-gray-200"
+                  className={({ isActive }) =>
+                    `flex justify-center px-4 py-2 text-[0.9rem] rounded-2xl ${
+                      isActive
+                        ? "bg-gray-800 text-white"
+                        : "text-black hover:bg-gray-300"
+                    }`
+                  }
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Kanban
                 </NavLink>
                 <NavLink
                   to="/calendar"
-                  className="block px-4 py-2 text-[0.9rem] text-black hover:bg-gray-200"
+                  className={({ isActive }) =>
+                    `flex justify-center px-4 py-2 text-[0.9rem] rounded-2xl ${
+                      isActive
+                        ? "bg-gray-800 text-white"
+                        : "text-black hover:bg-gray-300"
+                    }`
+                  }
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Calendar
@@ -119,23 +135,16 @@ const Navbar = () => {
             </div>
 
             {isUserMenuOpen && (
-              <div className="absolute right-0 mt-1 w-36 bg-white rounded-xl shadow-lg py-2 z-50">
+              <div className="w-36 absolute right-0 flex flex-col gap-1 mt-1 bg-white rounded-2xl shadow-lg p-1 z-50">
                 <Link
                   to="/login"
-                  className="block px-4 py-2 text-[0.9rem] text-black hover:bg-gray-200"
+                  className="flex justify-center px-4 py-2 text-[0.9rem] rounded-2xl text-black hover:bg-gray-300"
                   onClick={() => setIsUserMenuOpen(false)}
                 >
                   Login
                 </Link>
-                <Link
-                  to="/signup"
-                  className="block px-4 py-2 text-[0.9rem] text-black hover:bg-gray-200"
-                  onClick={() => setIsUserMenuOpen(false)}
-                >
-                  Signup
-                </Link>
                 <button
-                  className="block w-full px-4 py-2 text-[0.9rem] text-left text-black hover:bg-gray-200 cursor-pointer"
+                  className="w-full flex justify-center px-4 py-2 text-[0.9rem] rounded-2xl text-black hover:bg-gray-200 cursor-pointer"
                   onClick={() => {
                     localStorage.removeItem("token");
                     setIsUserMenuOpen(false);

@@ -1,8 +1,9 @@
 import Navbar from "../components/Navbar";
-import Inbox from "../components/Inbox";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Toast from "../components/Toast";
+import Inbox from "../components/mail/Inbox";
+import MailCard from "../components/mail/MailCard";
 
 const Mail = () => {
   const location = useLocation();
@@ -21,8 +22,9 @@ const Mail = () => {
   return (
     <div className="bg-gold-gradient min-h-screen">
       <Navbar />
-      <main className="py-5">
+      <main className="flex py-5">
         <Inbox />
+        <MailCard />
       </main>
       {toast && (
         <Toast message={toast.message} type={toast.type} onClose={hideToast} />
