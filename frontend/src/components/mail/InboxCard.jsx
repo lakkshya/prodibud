@@ -29,7 +29,7 @@ const InboxCard = ({ mail }) => {
   };
 
   return (
-    <Link to="/mail/inbox/:id" className="flex justify-center gap-3 bg-white hover:scale-103 duration-200 p-5 rounded-xl">
+    <Link to={`/mail/inbox/${mail.id}`} className="flex justify-center gap-3 bg-white hover:scale-103 duration-200 p-5 rounded-xl">
       {/* Image */}
       <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">
         {getInitials(mail.sender?.name)}
