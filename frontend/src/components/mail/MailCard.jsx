@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { LuChevronDown, LuForward, LuTrash2 } from "react-icons/lu";
+import {
+  LuChevronDown,
+  LuChevronUp,
+  LuForward,
+  LuTrash2,
+} from "react-icons/lu";
 
 const MailCard = () => {
   const [isInfoShowing, setIsInfoShowing] = useState(false);
@@ -10,7 +15,7 @@ const MailCard = () => {
       <div className="flex justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10">
-            <img src="./user.png" alt="User image" className="rounded-full" />
+            <img src="/user.png" alt="User image" className="rounded-full" />
           </div>
           <h3 className="text-[1rem] font-medium">Sender Name</h3>
         </div>
@@ -32,7 +37,7 @@ const MailCard = () => {
           }`}
         >
           <p className="w-15 text-[0.9rem] text-gray-700">Mail Info</p>
-          <LuChevronDown />
+          {isInfoShowing ? <LuChevronUp /> : <LuChevronDown />}
         </button>
         {isInfoShowing && (
           <div className="flex flex-col gap-1 p-3">

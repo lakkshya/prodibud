@@ -111,7 +111,7 @@ const Signup = () => {
       const { token } = response.data;
       localStorage.setItem("token", token);
 
-      navigate("/mail", {
+      navigate("/mail/inbox", {
         state: {
           toast: { message: "Signup successful", type: "Success" },
         },

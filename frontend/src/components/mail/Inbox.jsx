@@ -1,7 +1,7 @@
 import InboxCard from "./InboxCard";
 import { LuSearch } from "react-icons/lu";
 
-const Inbox = () => {
+const Inbox = ({ data }) => {
   return (
     <div className="w-100 flex flex-col gap-5 bg-gray-100/60 p-5">
       <div className="relative">
@@ -15,11 +15,11 @@ const Inbox = () => {
           className="w-full bg-gray-100 text-gray-900 pl-12 py-2 rounded-xl border border-gray-300 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
         />
       </div>
+
       <div className="flex flex-col gap-2">
-        <InboxCard />
-        <InboxCard />
-        <InboxCard />
-        <InboxCard />
+        {data.map((mail) => (
+          <InboxCard key={mail.id} mail={mail} />
+        ))}
       </div>
     </div>
   );

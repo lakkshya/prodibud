@@ -29,7 +29,7 @@ const Navbar = () => {
   return (
     <div className="px-5 md:px-10 py-5">
       <div className="h-15 flex items-center justify-between">
-        <img src="./logo.png" alt="Prodibud Logo" className="h-full" />
+        <img src="/logo.png" alt="Prodibud Logo" className="h-full" />
 
         <div className="flex justify-between gap-2 sm:gap-5">
           {/* Mobile Nav */}

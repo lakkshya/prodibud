@@ -52,7 +52,7 @@ const Login = () => {
       const { token } = response.data;
       localStorage.setItem("token", token);
 
-      navigate("/mail", {
+      navigate("/mail/inbox", {
         state: {
           toast: { message: "Login successful", type: "Success" },
         },

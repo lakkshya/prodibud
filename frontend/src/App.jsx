@@ -1,9 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
-import Mail from "./pages/Mail";
 import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
+import MailInbox from "./pages/MailInbox";
 
 function App() {
   return (
@@ -13,10 +13,10 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route
-          path="/mail"
+          path="/mail/inbox"
           element={
             <ProtectedRoute>
-              <Mail />
+              <MailInbox />
             </ProtectedRoute>
           }
         />
