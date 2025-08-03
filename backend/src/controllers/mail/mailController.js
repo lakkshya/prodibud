@@ -87,29 +87,6 @@ const sendEmail = async (req, res) => {
   }
 };
 
-const getInbox = async (req, res) => {
-  try {
-    const inbox = await prisma.email.findMany({
-      where: {
-        recipients: {
-          some: { userId: req.user.id },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-      include: {
-        sender: true,
-        cc: true,
-        bcc: false,
-        attachments: true,
-      },
-    });
-
-    res.json(inbox);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch inbox" });
-  }
-};
-
 const getSent = async (req, res) => {
   try {
     const sentEmails = await prisma.email.findMany({
@@ -160,7 +137,6 @@ const markAsRead = async (req, res) => {
 module.exports = {
   validateRecipients,
   sendEmail,
-  getInbox,
   getSent,
   markAsRead,
 };

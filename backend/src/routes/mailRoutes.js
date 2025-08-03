@@ -3,10 +3,10 @@ const router = express.Router();
 const {
   validateRecipients,
   sendEmail,
-  getInbox,
   getSent,
   markAsRead,
 } = require("../controllers/mail/mailController");
+const { getInboxMails, getSingleInboxMail } = require("../controllers/mail/inbox/inboxController");
 const {
   saveDraft,
   getDrafts,
@@ -18,7 +18,10 @@ const protect = require("../middlewares/authMiddleware"); //middleware to check 
 
 router.post("/validate-recipients", protect, validateRecipients);
 router.post("/send", protect, sendEmail);
-router.get("/inbox", protect, getInbox);
+
+router.get("/inbox", protect, getInboxMails);
+router.get("/inbox/:id", protect, getSingleInboxMail);
+
 router.get("/sent", protect, getSent);
 router.put("/read/:emailId", protect, markAsRead);
 router.post("/draft", protect, saveDraft);
