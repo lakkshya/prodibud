@@ -6,18 +6,77 @@ import {
   LuTrash2,
 } from "react-icons/lu";
 
-const MailCard = () => {
+const COLORS = [
+  "#F44336",
+  "#E91E63",
+  "#9C27B0",
+  "#673AB7",
+  "#3F51B5",
+  "#2196F3",
+  "#03A9F4",
+  "#00BCD4",
+  "#009688",
+  "#4CAF50",
+  "#8BC34A",
+  "#CDDC39",
+  "#FFC107",
+  "#FF9800",
+  "#FF5722",
+  "#795548",
+];
+
+const MailCard = ({ mail }) => {
   const [isInfoShowing, setIsInfoShowing] = useState(false);
 
+  if (!mail) {
+    return (
+      <div className="w-full h-full flex justify-center items-center bg-white p-6 text-gray-500">
+        <p>Click on a mail to view</p>
+      </div>
+    );
+  }
+
+  const getColorFromName = (name) => {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % COLORS.length;
+    return COLORS[index];
+  };
+
+  const bgColor = getColorFromName(mail.sender.name);
+
+  const getInitials = (name) => {
+    const parts = name.trim().split(" ");
+    const initials = parts.map((p) => p[0].toUpperCase()).join("");
+    return initials.slice(0, 2);
+  };
+
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    return date.toLocaleString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  };
+
   return (
-    <div className="w-150 flex flex-col gap-5 bg-white p-5">
+    <div className="w-full h-full flex flex-col gap-5 bg-white px-5 py-2 md:py-5">
       {/* Header */}
       <div className="flex justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10">
-            <img src="/user.png" alt="User image" className="rounded-full" />
+          <div
+            className="w-10 h-10 rounded-full text-white flex items-center justify-center font-bold text-[0.9rem]"
+            style={{ backgroundColor: bgColor }}
+          >
+            {getInitials(mail.sender?.name)}
           </div>
-          <h3 className="text-[1rem] font-medium">Sender Name</h3>
+          <h3 className="text-[1rem] font-medium">{mail.sender.name}</h3>
         </div>
         <div className="flex items-center gap-1">
           <button className="w-8 h-8 flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer">
@@ -43,23 +102,23 @@ const MailCard = () => {
           <div className="flex flex-col gap-1 p-3">
             <div className="flex">
               <p className="w-15 text-[0.9rem] text-gray-700">From</p>
-              <p className="text-[0.9rem]">sender@gmail.com</p>
+              <p className="text-[0.9rem]">{mail.sender.email}</p>
             </div>
             <div className="flex">
               <p className="w-15 text-[0.9rem] text-gray-700">To</p>
-              <p className="text-[0.9rem]">kaiparker.tvd11@gmail.com</p>
+              <p className="text-[0.9rem]">
+                {mail.recipients.map((r) => r.user.email)}
+              </p>
             </div>
             <div className="flex">
               <p className="w-15 text-[0.9rem] text-gray-700">Cc</p>
-              <p className="text-[0.9rem]">kaiparker.tvd11@gmail.com</p>
-            </div>
-            <div className="flex">
-              <p className="w-15 text-[0.9rem] text-gray-700">Bcc</p>
-              <p className="text-[0.9rem]">kaiparker.tvd11@gmail.com</p>
+              <p className="text-[0.9rem]">
+                {mail.cc.map((r) => r.user.email)}
+              </p>
             </div>
             <div className="flex">
               <p className="w-15 text-[0.9rem] text-gray-700">Date</p>
-              <p className="text-[0.9rem]">2 Jun 2025, 23:18</p>
+              <p className="text-[0.9rem]">{formatDate(mail.createdAt)}</p>
             </div>
           </div>
         )}
@@ -67,21 +126,9 @@ const MailCard = () => {
       {/* Content */}
       <div className="flex flex-col gap-3">
         {/* Subject */}
-        <h5>Subject - Reminder for work submission</h5>
+        <h5>Subject - {mail.subject}</h5>
         {/* Body */}
-        <p className="text-[0.9rem]/6 text-gray-500">
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Inventore
-          porro impedit, eius quis placeat omnis tempora ipsum, quaerat, magnam
-          nam ab quibusdam facilis? Assumenda dolorum quos, unde at iure
-          perferendis dicta exercitationem culpa, inventore nobis aperiam
-          pariatur, optio quidem consequatur rem corporis sequi deserunt! Unde
-          at nam et sapiente rerum autem quisquam sit sed dolorem repellendus
-          assumenda, aspernatur sint inventore sunt velit delectus eos odio
-          dolores explicabo molestiae asperiores nulla aliquid. Minima esse
-          maxime soluta dicta, nisi, fuga quam eius veniam harum, error possimus
-          est natus reiciendis distinctio facere. Incidunt placeat sit labore
-          consectetur suscipit quis quos quidem, amet facilis!
-        </p>
+        <p className="text-[0.9rem]/6 text-gray-500">{mail.body}</p>
       </div>
     </div>
   );

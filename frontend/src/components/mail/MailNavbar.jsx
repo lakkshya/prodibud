@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 const MailNavbar = () => {
   return (
-    <div className="w-60 flex flex-col gap-8 bg-gray-200/70 p-5">
+    <div className="w-full h-full flex flex-col gap-8 bg-gray-200/70 p-5">
       <button className="relative bg-amber-400 text-left p-3 rounded-4xl cursor-pointer">
         <div className="absolute left-0 inset-y-0 pl-5 flex items-center">
           <LuPencil className="w-4 h-4" />

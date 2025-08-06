@@ -4,7 +4,6 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MailInbox from "./pages/MailInbox";
-import MailInboxEach from "./pages/MailInboxEach";
 
 function App() {
   return (
@@ -25,7 +24,7 @@ function App() {
           path="/mail/inbox/:id"
           element={
             <ProtectedRoute>
-              <MailInboxEach />
+              <MailInbox />
             </ProtectedRoute>
           }
         />

@@ -19,7 +19,7 @@ const COLORS = [
   "#795548",
 ];
 
-const InboxCard = ({ mail }) => {
+const MobileInboxCard = ({ mail }) => {
   const getColorFromName = (name) => {
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
@@ -72,7 +72,9 @@ const InboxCard = ({ mail }) => {
       </div>
       {/* Content */}
       <div className="flex flex-col gap-1 flex-1">
-        <h3 className="text-[0.9rem] md:text-[1rem] font-medium">{mail.sender.name}</h3>
+        <h3 className="text-[0.9rem] md:text-[1rem] font-medium">
+          {mail.sender.name}
+        </h3>
         <p className="text-[0.825rem] md:text-[0.875rem] text-gray-500 line-clamp-2">
           {mail.subject}
         </p>
@@ -86,4 +88,4 @@ const InboxCard = ({ mail }) => {
   );
 };
 
-export default InboxCard;
+export default MobileInboxCard;

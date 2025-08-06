@@ -40,8 +40,17 @@ const getSingleInboxMail = async (req, res) => {
       },
       include: {
         sender: true,
-        cc: true,
+        cc: {
+          include: {
+            user: true,
+          },
+        },
         attachments: true,
+        recipients: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
 

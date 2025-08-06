@@ -1,5 +1,5 @@
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import { LuMenu, LuUserRound } from "react-icons/lu";
+import { LuEllipsis, LuUserRound } from "react-icons/lu";
 import { useEffect, useRef, useState } from "react";
 
 const Navbar = () => {
@@ -27,18 +27,18 @@ const Navbar = () => {
   }, []);
 
   return (
-    <div className="px-5 md:px-10 py-5">
-      <div className="h-15 flex items-center justify-between">
+    <div className="h-18 md:h-20 flex items-center justify-center px-2 md:px-5">
+      <div className="w-full h-12 md:h-15 flex items-center justify-between">
         <img src="/logo.png" alt="Prodibud Logo" className="h-full" />
 
         <div className="flex justify-between gap-2 sm:gap-5">
           {/* Mobile Nav */}
           <div className="sm:hidden relative" ref={mobileMenuRef}>
             <button
-              className="w-12 h-12 flex items-center justify-center bg-white/80 hover:bg-gray-300 rounded-full cursor-pointer"
+              className="w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-gray-300 rounded-full cursor-pointer"
               onClick={() => setIsMobileMenuOpen((prev) => !prev)}
             >
-              <LuMenu className="text-[1.2rem]" />
+              <LuEllipsis className="text-[1.2rem]" />
             </button>
 
             {isMobileMenuOpen && (
@@ -128,7 +128,7 @@ const Navbar = () => {
           {/* Profile Menu */}
           <div className="relative" ref={userMenuRef}>
             <div
-              className="w-12 h-12 flex items-center justify-center bg-white/80 hover:bg-gray-300 rounded-full cursor-pointer"
+              className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white/80 hover:bg-gray-300 rounded-full cursor-pointer"
               onClick={() => setIsUserMenuOpen((prev) => !prev)}
             >
               <LuUserRound className="text-[1.2rem]" />

@@ -3,7 +3,7 @@ import { LuSearch } from "react-icons/lu";
 
 const Inbox = ({ data }) => {
   return (
-    <div className="w-100 flex flex-col gap-5 bg-gray-100/60 p-5">
+    <div className="w-full h-full flex flex-col gap-5 bg-gray-100/60 p-5">
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
           <LuSearch className="h-4 w-4 text-gray-400" />
