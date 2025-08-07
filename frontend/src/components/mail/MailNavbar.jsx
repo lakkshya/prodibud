@@ -37,7 +37,7 @@ const MailNavbar = () => {
         </NavLink>
 
         <NavLink
-          to="/mail/draft"
+          to="/mail/trash"
           className={({ isActive }) =>
             `relative text-left p-3 rounded-4xl ${isActive ? "bg-white" : "hover:bg-white/50"}`
           }

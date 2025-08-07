@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 const COLORS = [
   "#F44336",
   "#E91E63",
@@ -19,7 +17,7 @@ const COLORS = [
   "#795548",
 ];
 
-const InboxCard = ({ mail }) => {
+const MobileMailSmallCard = ({ mail }) => {
   const getColorFromName = (name) => {
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
@@ -59,10 +57,7 @@ const InboxCard = ({ mail }) => {
   };
 
   return (
-    <Link
-      to={`/mail/inbox/${mail.id}`}
-      className="flex justify-center gap-3 bg-white hover:scale-103 duration-200 p-3 rounded-xl"
-    >
+    <div className="flex justify-center gap-3 bg-white hover:scale-103 duration-200 p-3 rounded-xl">
       {/* Image */}
       <div
         className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-[0.9rem]"
@@ -72,7 +67,9 @@ const InboxCard = ({ mail }) => {
       </div>
       {/* Content */}
       <div className="flex flex-col gap-1 flex-1">
-        <h3 className="text-[0.9rem] md:text-[1rem] font-medium">{mail.sender.name}</h3>
+        <h3 className="text-[0.9rem] md:text-[1rem] font-medium">
+          {mail.sender.name}
+        </h3>
         <p className="text-[0.825rem] md:text-[0.875rem] text-gray-500 line-clamp-2">
           {mail.subject}
         </p>
@@ -82,8 +79,8 @@ const InboxCard = ({ mail }) => {
           {getFormattedTimeOrDate(mail.createdAt)}
         </p>
       </div>
-    </Link>
+    </div>
   );
 };
 
-export default InboxCard;
+export default MobileMailSmallCard;

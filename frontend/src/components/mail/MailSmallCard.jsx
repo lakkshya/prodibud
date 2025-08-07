@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 const COLORS = [
   "#F44336",
   "#E91E63",
@@ -19,7 +17,7 @@ const COLORS = [
   "#795548",
 ];
 
-const MobileInboxCard = ({ mail }) => {
+const MailSmallCard = ({ mail }) => {
   const getColorFromName = (name) => {
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
@@ -59,10 +57,7 @@ const MobileInboxCard = ({ mail }) => {
   };
 
   return (
-    <Link
-      to={`/mail/inbox/${mail.id}`}
-      className="flex justify-center gap-3 bg-white hover:scale-103 duration-200 p-3 rounded-xl"
-    >
+    <div className="flex justify-center gap-3 bg-white hover:scale-103 duration-200 p-3 rounded-xl">
       {/* Image */}
       <div
         className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-[0.9rem]"
@@ -84,8 +79,8 @@ const MobileInboxCard = ({ mail }) => {
           {getFormattedTimeOrDate(mail.createdAt)}
         </p>
       </div>
-    </Link>
+    </div>
   );
 };
 
-export default MobileInboxCard;
+export default MailSmallCard;

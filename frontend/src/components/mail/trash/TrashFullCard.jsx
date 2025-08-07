@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   LuChevronDown,
   LuChevronUp,
-  LuForward,
+  LuRotateCw,
   LuTrash2,
 } from "react-icons/lu";
 
@@ -25,7 +27,9 @@ const COLORS = [
   "#795548",
 ];
 
-const MailCard = ({ mail }) => {
+const TrashFullCard = ({ mail }) => {
+  const navigate = useNavigate();
+
   const [isInfoShowing, setIsInfoShowing] = useState(false);
 
   if (!mail) {
@@ -65,6 +69,28 @@ const MailCard = ({ mail }) => {
     });
   };
 
+  const restoreFromTrash = async () => {
+    try {
+      await axios.put(
+        `http://localhost:5000/api/mail/trash/restore/${mail.id}`,
+        {}, // body is empty, but axios requires a second param before headers
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      navigate("/mail/trash", {
+        state: {
+          toast: { message: "Email restored from trash", type: "Success" },
+        },
+      });
+    } catch (error) {
+      console.error("Failed to restore from trash", error);
+    }
+  };
+
   return (
     <div className="w-full h-full flex flex-col gap-5 bg-white px-5 py-2 md:py-5">
       {/* Header */}
@@ -79,8 +105,11 @@ const MailCard = ({ mail }) => {
           <h3 className="text-[1rem] font-medium">{mail.sender.name}</h3>
         </div>
         <div className="flex items-center gap-1">
-          <button className="w-8 h-8 flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer">
-            <LuForward className="w-4 h-4" />
+          <button
+            onClick={restoreFromTrash}
+            className="w-8 h-8 flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer"
+          >
+            <LuRotateCw className="w-4 h-4" />
           </button>
           <button className="w-8 h-8 flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer">
             <LuTrash2 className="w-4 h-4" />
@@ -134,4 +163,4 @@ const MailCard = ({ mail }) => {
   );
 };
 
-export default MailCard;
+export default TrashFullCard;
