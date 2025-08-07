@@ -1,55 +1,55 @@
 import { useEffect, useState } from "react";
-import { useLocation, useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import axios from "axios";
 
 import Navbar from "../components/Navbar";
 import Toast from "../components/Toast";
-import InboxList from "../components/mail/inbox/InboxList";
-import InboxFullCard from "../components/mail/inbox/InboxFullCard";
 import MailNavbar from "../components/mail/MailNavbar";
 import { LuArrowLeft, LuMenu } from "react-icons/lu";
 import MobileMailNavbar from "../components/mail/MobileMailNavbar";
-import MobileInboxList from "../components/mail/inbox/MobileInboxList";
+import MobileTrashList from "../components/mail/trash/MobileTrashList";
+import TrashList from "../components/mail/trash/TrashList";
+import TrashFullCard from "../components/mail/trash/TrashFullCard";
 
-const MailInbox = () => {
+const MailTrash = () => {
   const location = useLocation();
   const { id } = useParams();
 
   const [toast, setToast] = useState(null);
-  const [inboxMail, setInboxMail] = useState([]);
-  const [selectedMail, setSelectedMail] = useState(null);
+  const [trashMail, setTrashMail] = useState([]);
+  const [selectedTrashMail, setSelectedTrashMail] = useState(null);
   const [isMobileMailNavOpen, setIsMobileMailNavOpen] = useState(false);
 
   //fetch trash emails from backend API
   useEffect(() => {
-    const fetchMail = async () => {
+    const fetchTrashMail = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/mail/inbox", {
+        const res = await axios.get("http://localhost:5000/api/mail/trash", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
 
-        setInboxMail(res.data);
+        setTrashMail(res.data);
       } catch (err) {
-        console.error("Failed to fetch inbox:", err);
+        console.error("Failed to fetch trash:", err);
       }
     };
 
-    fetchMail();
+    fetchTrashMail();
   }, [location]);
 
   //fetch particular trash email from backend API
   useEffect(() => {
-    const fetchSingleMail = async () => {
+    const fetchSingleTrashMail = async () => {
       if (!id) {
-        setSelectedMail(null);
+        setSelectedTrashMail(null);
         return;
       }
 
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/mail/inbox/${id}`,
+          `http://localhost:5000/api/mail/trash/${id}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -57,13 +57,13 @@ const MailInbox = () => {
           }
         );
 
-        setSelectedMail(res.data);
+        setSelectedTrashMail(res.data);
       } catch (err) {
-        console.error("Failed to fetch single mail:", err);
+        console.error("Failed to fetch single trash mail:", err);
       }
     };
 
-    fetchSingleMail();
+    fetchSingleTrashMail();
   }, [id]);
 
   //mobile mail navbar
@@ -79,9 +79,9 @@ const MailInbox = () => {
   useEffect(() => {
     if (location.state?.toast) {
       setToast(location.state.toast);
-
-      window.history.replaceState({}, document.title);
     }
+
+    window.history.replaceState({}, document.title);
   }, [location.state]);
 
   const hideToast = () => setToast(null);
@@ -97,15 +97,15 @@ const MailInbox = () => {
           </div>
 
           <div className="col-span-3 overflow-y-auto">
-            {inboxMail.length > 0 ? (
-              <InboxList data={inboxMail} />
+            {trashMail.length > 0 ? (
+              <TrashList data={trashMail} />
             ) : (
-              <p>Your inbox is empty</p>
+              <p>Your trash is empty</p>
             )}
           </div>
 
           <div className="col-span-5 overflow-y-auto">
-            <InboxFullCard mail={selectedMail} />
+            <TrashFullCard mail={selectedTrashMail} />
           </div>
         </div>
       </main>
@@ -132,18 +132,19 @@ const MailInbox = () => {
         <div className="h-[calc(100vh-108px)] overflow-y-auto">
           {id ? (
             <div className="bg-white rounded-xl py-2">
-              <Link to="/mail/inbox" className="flex text-gray-500 p-2 ml-2">
+              <Link to="/mail/trash" className="flex text-gray-500 p-2 ml-2">
                 <LuArrowLeft className="w-5 h-5" />
               </Link>
-              <InboxFullCard mail={selectedMail} />
+              <TrashFullCard mail={selectedTrashMail} />
             </div>
-          ) : inboxMail.length > 0 ? (
-            <MobileInboxList data={inboxMail} />
+          ) : trashMail.length > 0 ? (
+            <MobileTrashList data={trashMail} />
           ) : (
-            <p>Your inbox is empty</p>
+            <p>Your trash is empty</p>
           )}
         </div>
       </main>
+
       {isMobileMailNavOpen && (
         <div
           className="fixed inset-0 bg-black/30 z-40 md:hidden"
@@ -165,4 +166,4 @@ const MailInbox = () => {
   );
 };
 
-export default MailInbox;
+export default MailTrash;

@@ -9,7 +9,6 @@ import {
   MdLock,
   MdDateRange,
 } from "react-icons/md";
-import Toast from "../components/Toast";
 import Loading from "../components/Loading";
 import withMinDelay from "../utils/withMinDelay";
 
@@ -27,16 +26,7 @@ const Signup = () => {
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
 
   const [errors, setErrors] = useState({});
-  const [toast, setToast] = useState({ message: "", type: "" });
   const [isLoading, setIsLoading] = useState(false);
-
-  const showToast = (message, type) => {
-    setToast({ message, type });
-  };
-
-  const hideToast = () => {
-    setToast({ message: "", type: "" });
-  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -121,7 +111,6 @@ const Signup = () => {
         err.response && err.response.data?.message
           ? err.response.data.message
           : "Something went wrong. Please try again.";
-      showToast(msg, "error");
       console.error("Signup error", err);
     } finally {
       setIsLoading(false);
@@ -458,9 +447,6 @@ const Signup = () => {
           </form>
         </div>
       </main>
-      {toast.message && (
-        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
-      )}
     </div>
   );
 };

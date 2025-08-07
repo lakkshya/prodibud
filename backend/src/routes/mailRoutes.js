@@ -6,7 +6,16 @@ const {
   getSent,
   markAsRead,
 } = require("../controllers/mail/mailController");
-const { getInboxMails, getSingleInboxMail } = require("../controllers/mail/inbox/inboxController");
+const {
+  getInboxMails,
+  getSingleInboxMail,
+} = require("../controllers/mail/inbox/inboxController");
+const {
+  moveEmailToTrash,
+  restoreEmailFromTrash,
+  getTrashEmails,
+  getSingleTrashEmail,
+} = require("../controllers/mail/trash/trashController");
 const {
   saveDraft,
   getDrafts,
@@ -24,6 +33,14 @@ router.get("/inbox/:id", protect, getSingleInboxMail);
 
 router.get("/sent", protect, getSent);
 router.put("/read/:emailId", protect, markAsRead);
+
+//draft
+router.put("/trash/:id", protect, moveEmailToTrash);
+router.put("/trash/restore/:id", protect, restoreEmailFromTrash);
+router.get("/trash", protect, getTrashEmails);
+router.get("/trash/:id", protect, getSingleTrashEmail);
+
+//draft
 router.post("/draft", protect, saveDraft);
 router.get("/drafts", protect, getDrafts);
 router.put("/draft/:id", protect, editDraft);

@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MailInbox from "./pages/MailInbox";
+import MailTrash from "./pages/MailTrash";
 
 function App() {
   return (
@@ -25,6 +26,22 @@ function App() {
           element={
             <ProtectedRoute>
               <MailInbox />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mail/trash"
+          element={
+            <ProtectedRoute>
+              <MailTrash />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mail/trash/:id"
+          element={
+            <ProtectedRoute>
+              <MailTrash />
             </ProtectedRoute>
           }
         />

@@ -1,7 +1,8 @@
-import InboxCard from "./InboxCard";
+import { Link } from "react-router-dom";
 import { LuSearch } from "react-icons/lu";
+import MailSmallCard from "../MailSmallCard";
 
-const Inbox = ({ data }) => {
+const TrashList = ({ data }) => {
   return (
     <div className="w-full h-full flex flex-col gap-5 bg-gray-100/60 p-5">
       <div className="relative">
@@ -18,11 +19,13 @@ const Inbox = ({ data }) => {
 
       <div className="flex flex-col gap-2">
         {data.map((mail) => (
-          <InboxCard key={mail.id} mail={mail} />
+          <Link to={`/mail/trash/${mail.id}`} key={mail.id}>
+            <MailSmallCard mail={mail} />
+          </Link>
         ))}
       </div>
     </div>
   );
 };
 
-export default Inbox;
+export default TrashList;

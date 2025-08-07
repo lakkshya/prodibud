@@ -16,16 +16,7 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
-  const [toast, setToast] = useState({ message: "", type: "" });
   const [isLoading, setIsLoading] = useState(false);
-
-  const showToast = (message, type) => {
-    setToast({ message, type });
-  };
-
-  const hideToast = () => {
-    setToast({ message: "", type: "" });
-  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -62,7 +53,6 @@ const Login = () => {
         err.response && err.response.data?.message
           ? err.response.data.message
           : "Something went wrong. Please try again.";
-      showToast(msg, "error");
       console.error("Login error", err);
     } finally {
       setIsLoading(false);
@@ -224,9 +214,6 @@ const Login = () => {
           </form>
         </div>
       </main>
-      {toast.message && (
-        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
-      )}
     </div>
   );
 };
