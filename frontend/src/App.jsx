@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import MailInbox from "./pages/MailInbox";
 import MailTrash from "./pages/MailTrash";
+import MailCompose from "./pages/MailCompose";
 
 function App() {
   return (
@@ -42,6 +43,14 @@ function App() {
           element={
             <ProtectedRoute>
               <MailTrash />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mail/compose"
+          element={
+            <ProtectedRoute>
+              <MailCompose />
             </ProtectedRoute>
           }
         />
