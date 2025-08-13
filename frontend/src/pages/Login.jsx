@@ -49,10 +49,6 @@ const Login = () => {
         },
       });
     } catch (err) {
-      const msg =
-        err.response && err.response.data?.message
-          ? err.response.data.message
-          : "Something went wrong. Please try again.";
       console.error("Login error", err);
     } finally {
       setIsLoading(false);
