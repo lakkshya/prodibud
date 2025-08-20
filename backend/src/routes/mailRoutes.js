@@ -17,6 +17,7 @@ const {
   restoreEmailFromTrash,
   getTrashEmails,
   getSingleTrashEmail,
+  deleteFromTrash,
 } = require("../controllers/mail/trash/trashController");
 const {
   saveDraft,
@@ -51,6 +52,7 @@ router.put("/inbox/:id/delete", protect, deleteInboxMail);
 router.put("/trash/restore/:id", protect, restoreEmailFromTrash);
 router.get("/trash", protect, getTrashEmails);
 router.get("/trash/:id", protect, getSingleTrashEmail);
+router.delete("/trash/delete/:id", protect, deleteFromTrash);
 
 //draft
 router.post("/draft", protect, saveDraft);

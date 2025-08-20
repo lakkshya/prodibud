@@ -153,6 +153,7 @@ const sendEmail = async (req, res) => {
           create: attachments.map((att) => ({
             filename: att.filename,
             url: att.url,
+            publicId: att.publicId,
           })),
         },
       },

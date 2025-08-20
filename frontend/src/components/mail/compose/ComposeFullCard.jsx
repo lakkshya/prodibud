@@ -326,6 +326,7 @@ const ComposeFullCard = () => {
         attachments: composeData.attachments.map((att) => ({
           filename: att.filename,
           url: att.url,
+          publicId: att.public_id,
         })),
       };
 
