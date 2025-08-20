@@ -6,6 +6,7 @@ import {
   LuChevronUp,
   LuForward,
   LuTrash2,
+  LuArrowDownToLine,
 } from "react-icons/lu";
 
 const COLORS = [
@@ -156,7 +157,37 @@ const InboxFullCard = ({ mail }) => {
         {/* Subject */}
         <h5>Subject - {mail.subject}</h5>
         {/* Body */}
-        <p className="text-[0.9rem]/6 text-gray-500">{mail.body}</p>
+        <p className="text-[1rem]/6 text-gray-500">{mail.body}</p>
+      </div>
+      {/* Attachments */}
+      <div className="grid sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-2 mb-6">
+        {mail.attachments?.map((file, index) => (
+          <div
+            key={
+              file.public_id ||
+              file.tempId ||
+              `attachment-${index}-${file.filename}`
+            }
+            className="relative bg-gray-100 rounded-lg border border-gray-300 overflow-hidden"
+          >
+            <div className="flex items-center justify-between px-3 py-1">
+              <a
+                href={file.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="truncate text-[1rem] text-blue-600 hover:text-gray-500"
+              >
+                {file.filename || file.url.split("/").pop()}
+              </a>
+              <a
+                href={file.url.replace("/upload/", "/upload/fl_attachment/")}
+                className="text-[1rem] text-blue-600 hover:text-gray-500"
+              >
+                <LuArrowDownToLine />
+              </a>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
