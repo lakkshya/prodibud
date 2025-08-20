@@ -4,7 +4,7 @@ import axios from "axios";
 import {
   LuChevronDown,
   LuChevronUp,
-  LuRotateCw,
+  LuForward,
   LuTrash2,
 } from "react-icons/lu";
 
@@ -27,7 +27,7 @@ const COLORS = [
   "#795548",
 ];
 
-const TrashFullCard = ({ mail }) => {
+const DraftsFullCard = ({ mail }) => {
   const navigate = useNavigate();
 
   const [isInfoShowing, setIsInfoShowing] = useState(false);
@@ -69,10 +69,14 @@ const TrashFullCard = ({ mail }) => {
     });
   };
 
-  const restoreFromTrash = async () => {
+  const handleEditDraft = () => {
+    navigate("/mail/compose", { state: { draft: mail } });
+  };
+
+  const moveToTrash = async () => {
     try {
       await axios.put(
-        `http://localhost:5000/api/mail/trash/restore/${mail.id}`,
+        `http://localhost:5000/api/mail/draft/${mail.id}/delete`,
         {}, // body is empty, but axios requires a second param before headers
         {
           headers: {
@@ -80,14 +84,13 @@ const TrashFullCard = ({ mail }) => {
           },
         }
       );
-
-      navigate("/mail/trash", {
+      navigate("/mail/drafts", {
         state: {
-          toast: { message: "Email restored from trash", type: "Success" },
+          toast: { message: "Draft moved to trash", type: "Success" },
         },
       });
     } catch (error) {
-      console.error("Failed to restore from trash", error);
+      console.error("Failed to move to trash", error);
     }
   };
 
@@ -106,12 +109,15 @@ const TrashFullCard = ({ mail }) => {
         </div>
         <div className="flex items-center gap-1">
           <button
-            onClick={restoreFromTrash}
+            onClick={handleEditDraft}
+            className="flex justify-center items-center bg-amber-400 hover:bg-gray-200 px-4 py-2 rounded-2xl cursor-pointer"
+          >
+            Edit
+          </button>
+          <button
+            onClick={moveToTrash}
             className="w-8 h-8 flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer"
           >
-            <LuRotateCw className="w-4 h-4" />
-          </button>
-          <button className="w-8 h-8 flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer">
             <LuTrash2 className="w-4 h-4" />
           </button>
         </div>
@@ -136,33 +142,13 @@ const TrashFullCard = ({ mail }) => {
             <div className="flex">
               <p className="w-15 text-[0.9rem] text-gray-700">To</p>
               <p className="text-[0.9rem]">
-                {mail.isDraft
-                  ? mail.draftRecipients.map((r, i) => (
-                      <span key={i} className="block">
-                        {r.email}
-                      </span>
-                    ))
-                  : mail.recipients.map((r, i) => (
-                      <span key={i} className="block">
-                        {r.user.email}
-                      </span>
-                    ))}
+                {mail.draftRecipients.map((r) => r.email)}
               </p>
             </div>
             <div className="flex">
               <p className="w-15 text-[0.9rem] text-gray-700">Cc</p>
               <p className="text-[0.9rem]">
-                {mail.isDraft
-                  ? mail.draftCC.map((r, i) => (
-                      <span key={i} className="block">
-                        {r.email}
-                      </span>
-                    ))
-                  : mail.cc.map((r, i) => (
-                      <span key={i} className="block">
-                        {r.user.email}
-                      </span>
-                    ))}
+                {mail.draftCC.map((r) => r.email)}
               </p>
             </div>
             <div className="flex">
@@ -183,4 +169,4 @@ const TrashFullCard = ({ mail }) => {
   );
 };
 
-export default TrashFullCard;
+export default DraftsFullCard;

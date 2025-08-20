@@ -1,22 +1,28 @@
-import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { LuPaperclip, LuTrash2, LuX } from "react-icons/lu";
 import ProgressBar from "../../ProgressBar";
 
 const ComposeFullCard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const fileInputRef = useRef();
+  const fileInputRef = useRef(); //for attachments
+
+  const draft = location.state?.draft;
 
   const [composeData, setComposeData] = useState({
-    recipients: [],
-    cc: [],
-    bcc: [],
-    attachments: [],
-    subject: "",
-    body: "",
+    draftId: draft?.id || null,
+    recipients:
+      draft?.draftRecipients?.map((r) => ({ id: r.id, email: r.email })) || [],
+    cc: draft?.draftCC?.map((r) => ({ id: r.id, email: r.email })) || [],
+    bcc: draft?.draftBCC?.map((r) => ({ id: r.id, email: r.email })) || [],
+    attachments: draft?.draftAttachments || [],
+    subject: draft?.subject || "",
+    body: draft?.body || "",
   });
+
   const [validationResult, setValidationResult] = useState({
     recipients: { valid: [], invalid: [] },
     cc: { valid: [], invalid: [] },
@@ -27,7 +33,7 @@ const ComposeFullCard = () => {
     cc: "",
     bcc: "",
   });
-  const [composeErrors, setComposeErros] = useState({});
+  const [composeErrors, setComposeErrors] = useState({});
   const [uploadProgress, setUploadProgress] = useState({});
 
   const isValidEmailFormat = (email) =>
@@ -98,7 +104,10 @@ const ComposeFullCard = () => {
 
   const handleRemoveEmail = (field, email) => {
     //remove from composeData
-    const updatedList = composeData[field].filter((e) => e !== email);
+    const updatedList = composeData[field].filter((item) => {
+      const itemEmail = typeof item === "string" ? item : item.email;
+      return itemEmail !== email;
+    });
     setComposeData((prev) => ({ ...prev, [field]: updatedList }));
 
     //remove from validationResult
@@ -118,6 +127,37 @@ const ComposeFullCard = () => {
     }
   };
 
+  useEffect(() => {
+    const validateEmails = (emails) => {
+      const valid = [];
+      const invalid = [];
+
+      emails.forEach((email) => {
+        if (isValidEmailFormat(email)) {
+          // For draft emails that are already validated, assume they have an id
+          valid.push({ email, id: null }); // You might need to get the actual id from somewhere
+        } else {
+          invalid.push(email);
+        }
+      });
+
+      return { valid, invalid };
+    };
+
+    if (draft) {
+      const recips = draft.draftRecipients?.map((r) => r.email) || [];
+      const ccs = draft.draftCC?.map((r) => r.email) || [];
+      const bccs = draft.draftBCC?.map((r) => r.email) || [];
+
+      setValidationResult({
+        recipients: validateEmails(recips),
+        cc: validateEmails(ccs),
+        bcc: validateEmails(bccs),
+      });
+    }
+  }, [draft]);
+
+  //Attachments
   const handleAttachmentButtonClick = () => {
     fileInputRef.current.click();
   };
@@ -125,6 +165,8 @@ const ComposeFullCard = () => {
   const handleAttachmentChange = async (e) => {
     const files = e.target.files;
     if (!files.length) return;
+
+    const activeTimers = new Set(); // Track active timers for cleanup
 
     for (let file of files) {
       const tempId = `${file.name}-${Date.now()}`;
@@ -141,7 +183,7 @@ const ComposeFullCard = () => {
       const formData = new FormData();
       formData.append("attachments", file);
 
-      let fakeTimer;
+      let fakeTimer, finishTimer;
 
       try {
         // Start fake progress bar
@@ -157,6 +199,8 @@ const ComposeFullCard = () => {
           });
         }, 50);
 
+        activeTimers.add(fakeTimer);
+
         // Real upload request (ignore actual onUploadProgress)
         const res = await axios.post(
           "http://localhost:5000/api/mail/upload-attachments",
@@ -169,21 +213,24 @@ const ComposeFullCard = () => {
           }
         );
 
-        console.log(res.data);
-
         // After server responds, complete to 100%
         clearInterval(fakeTimer);
-        let finishTimer = setInterval(() => {
+        activeTimers.delete(fakeTimer);
+
+        finishTimer = setInterval(() => {
           setUploadProgress((prev) => {
             let next = prev[tempId] || 80;
             if (next < 100) {
               next += 2;
             } else {
               clearInterval(finishTimer);
+              activeTimers.delete(finishTimer);
             }
             return { ...prev, [tempId]: Math.min(next, 100) };
           });
         }, 30);
+
+        activeTimers.add(finishTimer);
 
         // Replace temp file with backend data
         setComposeData((prev) => ({
@@ -206,7 +253,13 @@ const ComposeFullCard = () => {
           return copy;
         });
       } finally {
-        if (fakeTimer) clearInterval(fakeTimer);
+        // Clean up all timers
+        [fakeTimer, finishTimer].forEach((timer) => {
+          if (timer) {
+            clearInterval(timer);
+            activeTimers.delete(timer);
+          }
+        });
       }
     }
   };
@@ -252,7 +305,7 @@ const ComposeFullCard = () => {
     if (!composeData.subject) newErrors.subject = "Subject is required";
     if (!composeData.body) newErrors.body = "Body is required";
 
-    setComposeErros(newErrors);
+    setComposeErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
   };
@@ -292,6 +345,93 @@ const ComposeFullCard = () => {
     }
   };
 
+  //DRAFT
+
+  const hasAnyContent = () => {
+    const hasRecipients =
+      composeData.recipients.length ||
+      composeData.cc.length ||
+      composeData.bcc.length;
+
+    const hasText =
+      (composeData.subject && composeData.subject.trim().length > 0) ||
+      (composeData.body && composeData.body.trim().length > 0);
+
+    const hasAttachments = (composeData.attachments || []).length > 0;
+
+    return hasRecipients || hasText || hasAttachments;
+  };
+
+  const saveDraftOnce = async () => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      };
+      const payload = {
+        id: composeData.draftId,
+        subject: composeData.subject || "",
+        body: composeData.body || "",
+        recipients: composeData.recipients.map((u) => u.id).filter(Boolean),
+        cc: composeData.cc.map((u) => u.id).filter(Boolean),
+        bcc: composeData.bcc.map((u) => u.id).filter(Boolean),
+        // only include finished uploads
+        attachments: (composeData.attachments || [])
+          .filter((att) => !att.isUploading && att.url)
+          .map((att) => ({
+            filename: att.filename,
+            url: att.url,
+            public_id: att.public_id,
+          })),
+      };
+
+      let response;
+      if (composeData.draftId) {
+        const id = composeData.draftId;
+        response = await axios.put(
+          `http://localhost:5000/api/mail/draft/${id}`,
+          payload,
+          {
+            headers,
+          }
+        );
+        return id;
+      } else {
+        // your backend returns { message, draft }
+        response = await axios.post(
+          `http://localhost:5000/api/mail/draft`,
+          payload,
+          { headers }
+        );
+        const newId = response?.data?.draft?.id || response?.data?.id; // support either shape
+        if (newId) {
+          setComposeData((prev) => ({ ...prev, draftId: newId }));
+        }
+        return newId;
+      }
+    } catch (error) {
+      console.error("Error saving draft:", error);
+      throw error; // Re-throw to handle in calling function
+    }
+  };
+
+  const handleCloseCompose = async () => {
+    if (!hasAnyContent()) {
+      return navigate("/mail/inbox");
+    }
+
+    try {
+      await saveDraftOnce();
+      navigate("/mail/inbox", {
+        state: { toast: { message: "Saved to drafts", type: "Success" } },
+      });
+    } catch (err) {
+      console.error("Failed to save draft on close:", err);
+      navigate("/mail/inbox", {
+        state: { toast: { message: "Couldn't save draft", type: "Error" } },
+      });
+    }
+  };
+
   return (
     <div className="w-full h-full flex flex-col gap-5 bg-white px-5 py-2 md:py-5">
       {/* Header */}
@@ -325,7 +465,10 @@ const ComposeFullCard = () => {
           >
             <LuTrash2 className="w-4 h-4" />
           </button>
-          <button className="w-8 h-8 flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer">
+          <button
+            onClick={handleCloseCompose}
+            className="w-8 h-8 flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer"
+          >
             <LuX className="w-4 h-4" />
           </button>
         </div>
@@ -516,9 +659,13 @@ const ComposeFullCard = () => {
         )}
         {/* Attachments */}
         <div className="flex flex-wrap gap-2 mb-6">
-          {composeData.attachments?.map((file) => (
+          {composeData.attachments?.map((file, index) => (
             <div
-              key={file.public_id || file.tempId}
+              key={
+                file.public_id ||
+                file.tempId ||
+                `attachment-${index}-${file.filename}`
+              }
               className="relative w-48 bg-gray-100 rounded-lg border border-gray-300 overflow-hidden"
             >
               <div className="flex items-center justify-between px-3 py-1">

@@ -37,9 +37,10 @@ const getDrafts = async (req, res) => {
 
   try {
     const drafts = await prisma.email.findMany({
-      where: { senderId: userId, isDraft: true, isDeleted: false },
+      where: { senderId: userId, isDraft: true, isDraftDeleted: false },
       select: {
         id: true,
+        sender: { select: { name: true, email: true } },
         subject: true,
         body: true,
         createdAt: true,
@@ -53,7 +54,82 @@ const getDrafts = async (req, res) => {
 
     res.status(200).json({ drafts });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ error: "Failed to fetch drafts" });
+  }
+};
+
+const getSingleDraft = async (req, res) => {
+  const userId = req.user.id;
+  const { id } = req.params;
+
+  try {
+    // Find the draft belonging to the logged-in user
+    const draft = await prisma.email.findFirst({
+      where: {
+        id,
+        senderId: userId,
+        isDraft: true,
+      },
+      select: {
+        id: true,
+        sender: { select: { name: true, email: true } },
+        subject: true,
+        body: true,
+        createdAt: true,
+        updatedAt: true,
+        draftRecipients: true,
+        draftCC: true,
+        draftBCC: true,
+        draftAttachments: true,
+      },
+    });
+
+    // If no draft found
+    if (!draft) {
+      return res.status(404).json({ message: "Draft not found" });
+    }
+
+    //extract the IDs
+    const recipientIds = draft.draftRecipients;
+    const ccIds = draft.draftCC;
+    const bccIds = draft.draftBCC;
+
+    //fetch user info for those ids
+    const [recipientEmails, ccEmails, bccEmails] = await Promise.all([
+      prisma.user.findMany({
+        where: { id: { in: recipientIds } },
+        select: { id: true, email: true },
+      }),
+      prisma.user.findMany({
+        where: { id: { in: ccIds } },
+        select: { id: true, email: true },
+      }),
+      prisma.user.findMany({
+        where: { id: { in: bccIds } },
+        select: { id: true, email: true },
+      }),
+    ]);
+
+    // Transform draft attachments to include public_id
+    const transformedAttachments = (draft.draftAttachments || []).map(
+      (att) => ({
+        ...att,
+        public_id: att.public_id,
+        isUploading: false,
+      })
+    );
+
+    res.status(200).json({
+      ...draft,
+      draftRecipients: recipientEmails,
+      draftCC: ccEmails,
+      draftBCC: bccEmails,
+      draftAttachments: transformedAttachments,
+    });
+  } catch (error) {
+    console.error("Error fetching draft:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -70,20 +146,50 @@ const editDraft = async (req, res) => {
   const userId = req.user.id;
 
   try {
+    // First, check if the draft exists and belongs to the user
+    const existingDraft = await prisma.email.findFirst({
+      where: {
+        id,
+        senderId: userId,
+        isDraft: true,
+        isDraftDeleted: false, // Don't allow editing deleted drafts
+      },
+    });
+
+    if (!existingDraft) {
+      return res.status(404).json({
+        error: "Draft not found or you don't have permission to edit it",
+      });
+    }
+
+    // Update the draft
     const updatedDraft = await prisma.email.update({
       where: { id },
       data: {
         subject,
         body,
-        senderId: userId,
         draftRecipients: recipients,
         draftCC: cc,
         draftBCC: bcc,
         draftAttachments: attachments,
+        updatedAt: new Date(), // Explicitly update timestamp if needed
+      },
+      select: {
+        id: true,
+        subject: true,
+        body: true,
+        draftRecipients: true,
+        draftCC: true,
+        draftBCC: true,
+        draftAttachments: true,
+        updatedAt: true,
       },
     });
 
-    res.status(200).json({ message: "Draft updated", updatedDraft });
+    res.status(200).json({
+      message: "Draft updated successfully",
+      draft: updatedDraft,
+    });
   } catch (err) {
     console.error("Update draft error:", err);
     res.status(500).json({ error: "Failed to update draft" });
@@ -167,34 +273,25 @@ const deleteDraft = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const draft = await prisma.email.findUnique({
-      where: { id },
-    });
-
-    if (!draft || !draft.isDraft) {
-      return res.status(404).json({ error: "Draft not found" });
-    }
-    if (draft.senderId !== userId) {
-      return res.status(403).json({ error: "Unauthorized" });
-    }
-
     await prisma.email.update({
-      where: { id },
+      where: { id, senderId: userId },
       data: {
-        isDeleted: true,
+        isDraftDeleted: true,
       },
     });
 
     res.status(200).json({ message: "Draft moved to trash" });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ error: "Failed to delete draft" });
   }
 };
 
 module.exports = {
-    saveDraft,
-    getDrafts,
-    editDraft,
-    sendDraft,
-    deleteDraft,
+  saveDraft,
+  getDrafts,
+  getSingleDraft,
+  editDraft,
+  sendDraft,
+  deleteDraft,
 };

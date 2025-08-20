@@ -6,6 +6,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import MailInbox from "./pages/MailInbox";
 import MailTrash from "./pages/MailTrash";
 import MailCompose from "./pages/MailCompose";
+import MailDrafts from "./pages/MailDrafts";
 
 function App() {
   return (
@@ -51,6 +52,22 @@ function App() {
           element={
             <ProtectedRoute>
               <MailCompose />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mail/drafts"
+          element={
+            <ProtectedRoute>
+              <MailDrafts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mail/drafts/:id"
+          element={
+            <ProtectedRoute>
+              <MailDrafts />
             </ProtectedRoute>
           }
         />

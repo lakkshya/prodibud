@@ -72,7 +72,7 @@ const InboxFullCard = ({ mail }) => {
   const moveToTrash = async () => {
     try {
       await axios.put(
-        `http://localhost:5000/api/mail/trash/${mail.id}`,
+        `http://localhost:5000/api/mail/inbox/${mail.id}/delete`,
         {}, // body is empty, but axios requires a second param before headers
         {
           headers: {

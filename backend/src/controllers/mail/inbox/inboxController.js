@@ -133,4 +133,49 @@ const getSingleInboxMail = async (req, res) => {
   }
 };
 
-module.exports = { getInboxMails, getSingleInboxMail };
+const deleteInboxMail = async (req, res) => {
+  const userId = req.user.id;
+  const { id: emailId } = req.params;
+
+  try {
+    const recipient = await prisma.recipient.updateMany({
+      where: {
+        userId,
+        emailId,
+      },
+      data: {
+        isDeleted: true,
+      },
+    });
+
+    const cc = await prisma.cCRecipient.updateMany({
+      where: {
+        userId,
+        emailId,
+      },
+      data: {
+        isDeleted: true,
+      },
+    });
+
+    const bcc = await prisma.bCCRecipient.updateMany({
+      where: {
+        userId,
+        emailId,
+      },
+      data: {
+        isDeleted: true,
+      },
+    });
+
+    if (recipient.count === 0 && cc.count === 0 && bcc.count === 0) {
+      return res.status(404).json({ error: "Email not found for this user" });
+    }
+
+    res.status(200).json({ message: "Email moved to trash successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to move email to trash" });
+  }
+};
+
+module.exports = { getInboxMails, getSingleInboxMail, deleteInboxMail };
