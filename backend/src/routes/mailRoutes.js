@@ -11,9 +11,9 @@ const {
 const {
   getInboxMails,
   getSingleInboxMail,
+  deleteInboxMail,
 } = require("../controllers/mail/inbox/inboxController");
 const {
-  moveEmailToTrash,
   restoreEmailFromTrash,
   getTrashEmails,
   getSingleTrashEmail,
@@ -21,6 +21,7 @@ const {
 const {
   saveDraft,
   getDrafts,
+  getSingleDraft,
   editDraft,
   sendDraft,
   deleteDraft,
@@ -44,9 +45,9 @@ router.post("/send", protect, sendEmail);
 //inbox
 router.get("/inbox", protect, getInboxMails);
 router.get("/inbox/:id", protect, getSingleInboxMail);
+router.put("/inbox/:id/delete", protect, deleteInboxMail);
 
 //trash
-router.put("/trash/:id", protect, moveEmailToTrash);
 router.put("/trash/restore/:id", protect, restoreEmailFromTrash);
 router.get("/trash", protect, getTrashEmails);
 router.get("/trash/:id", protect, getSingleTrashEmail);
@@ -54,9 +55,10 @@ router.get("/trash/:id", protect, getSingleTrashEmail);
 //draft
 router.post("/draft", protect, saveDraft);
 router.get("/drafts", protect, getDrafts);
+router.get("/draft/:id", protect, getSingleDraft);
 router.put("/draft/:id", protect, editDraft);
 router.post("/draft/:id/send", protect, sendDraft);
-router.patch("/draft/:id/delete", protect, deleteDraft);
+router.put("/draft/:id/delete", protect, deleteDraft);
 
 //sent
 router.get("/sent", protect, getSent);

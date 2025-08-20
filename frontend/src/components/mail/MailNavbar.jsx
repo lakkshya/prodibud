@@ -30,7 +30,7 @@ const MailNavbar = () => {
         </NavLink>
 
         <NavLink
-          to="/mail/draft"
+          to="/mail/drafts"
           className={({ isActive }) =>
             `relative text-left p-3 rounded-4xl ${
               isActive ? "bg-white" : "hover:bg-white/50"
@@ -40,7 +40,7 @@ const MailNavbar = () => {
           <div className="absolute left-0 inset-y-0 pl-5 flex items-center">
             <LuFile className="w-4 h-4" />
           </div>
-          <span className="pl-10">Draft</span>
+          <span className="pl-10">Drafts</span>
         </NavLink>
 
         <NavLink
