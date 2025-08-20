@@ -91,6 +91,27 @@ const TrashFullCard = ({ mail }) => {
     }
   };
 
+  const deleteFromTrash = async () => {
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/mail/trash/delete/${mail.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      navigate("/mail/trash", {
+        state: {
+          toast: { message: "Email deleted from trash", type: "Success" },
+        },
+      });
+    } catch (error) {
+      console.error("Failed to delete from trash", error);
+    }
+  };
+
   return (
     <div className="w-full h-full flex flex-col gap-5 bg-white px-5 py-2 md:py-5">
       {/* Header */}
@@ -111,7 +132,10 @@ const TrashFullCard = ({ mail }) => {
           >
             <LuRotateCw className="w-4 h-4" />
           </button>
-          <button className="w-8 h-8 flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer">
+          <button
+            onClick={deleteFromTrash}
+            className="w-8 h-8 flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer"
+          >
             <LuTrash2 className="w-4 h-4" />
           </button>
         </div>

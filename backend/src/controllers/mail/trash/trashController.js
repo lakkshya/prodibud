@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const cloudinary = require("../../../../config/cloudinary");
 
 const restoreEmailFromTrash = async (req, res) => {
   const userId = req.user.id;
@@ -283,8 +284,81 @@ const getSingleTrashEmail = async (req, res) => {
   }
 };
 
+const deleteFromTrash = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  try {
+    //check if the trashed mail is a draft
+    const draft = await prisma.email.findFirst({
+      where: {
+        id,
+        senderId: userId,
+        isDraft: true,
+        isDraftDeleted: true,
+      },
+    });
+
+    if (draft) {
+      //delete attachments from cloudinary (from draftAttachments JSON)
+      if (draft.draftAttachments && Array.isArray(draft.draftAttachments)) {
+        for (const attachment of draft.draftAttachments) {
+          if (attachment.public_id) {
+            try {
+              await cloudinary.uploader.destroy(attachment.public_id);
+            } catch (cloudErr) {
+              console.error(
+                `Cloudinary delete failed for ${attachment.public_id}`,
+                cloudErr
+              );
+            }
+          }
+        }
+      }
+
+      await prisma.email.delete({
+        where: {
+          id,
+        },
+      });
+
+      return res
+        .status(200)
+        .json({ message: "Draft permanently deleted from trash" });
+    }
+
+    //otherwise, for trashed inbox mail
+    await prisma.recipient.deleteMany({
+      where: {
+        emailId: id,
+        userId,
+      },
+    });
+
+    await prisma.cCRecipient.deleteMany({
+      where: {
+        emailId: id,
+        userId,
+      },
+    });
+
+    await prisma.bCCRecipient.deleteMany({
+      where: {
+        emailId: id,
+        userId,
+      },
+    });
+
+    res.status(200).json({ message: "Mail permanently deleted from trash" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Failed to delete from trash" });
+  }
+};
+
 module.exports = {
   restoreEmailFromTrash,
   getTrashEmails,
   getSingleTrashEmail,
+  deleteFromTrash,
 };
