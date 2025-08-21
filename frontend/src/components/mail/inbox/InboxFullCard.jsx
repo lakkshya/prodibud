@@ -30,7 +30,7 @@ const COLORS = [
 
 const InboxFullCard = ({ mail }) => {
   const navigate = useNavigate();
-
+  
   const [isInfoShowing, setIsInfoShowing] = useState(false);
 
   if (!mail) {
@@ -70,6 +70,14 @@ const InboxFullCard = ({ mail }) => {
     });
   };
 
+  const handleMailForward = () => {
+    navigate("/mail/compose", {
+      state: {
+        forwardedMail: mail,
+      },
+    });
+  };
+
   const moveToTrash = async () => {
     try {
       await axios.put(
@@ -105,7 +113,10 @@ const InboxFullCard = ({ mail }) => {
           <h3 className="text-[1rem] font-medium">{mail.sender.name}</h3>
         </div>
         <div className="flex items-center gap-1">
-          <button className="w-8 h-8 flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer">
+          <button
+            onClick={handleMailForward}
+            className="w-8 h-8 flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer"
+          >
             <LuForward className="w-4 h-4" />
           </button>
           <button

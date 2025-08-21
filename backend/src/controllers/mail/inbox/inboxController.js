@@ -118,10 +118,22 @@ const getSingleInboxMail = async (req, res) => {
             user: true,
           },
         },
-        attachments: true,
+        attachments: {
+          select: {
+            filename: true,
+            url: true,
+            publicId: true,
+          },
+        },
         recipients: {
           include: {
-            user: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
           },
         },
       },

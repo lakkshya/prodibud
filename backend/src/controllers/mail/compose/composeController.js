@@ -68,7 +68,7 @@ const uploadAttachment = async (req, res) => {
     res.status(200).json({
       attachments: results.map((f, i) => ({
         filename: req.files[i].originalname,
-        public_id: f.public_id,
+        publicId: f.public_id,
         url: f.secure_url,
       })),
     });

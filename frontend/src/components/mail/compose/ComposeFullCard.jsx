@@ -11,6 +11,7 @@ const ComposeFullCard = () => {
   const fileInputRef = useRef(); //for attachments
 
   const draft = location.state?.draft;
+  const forwardedMail = location.state?.forwardedMail;
 
   const [composeData, setComposeData] = useState({
     draftId: draft?.id || null,
@@ -18,9 +19,18 @@ const ComposeFullCard = () => {
       draft?.draftRecipients?.map((r) => ({ id: r.id, email: r.email })) || [],
     cc: draft?.draftCC?.map((r) => ({ id: r.id, email: r.email })) || [],
     bcc: draft?.draftBCC?.map((r) => ({ id: r.id, email: r.email })) || [],
-    attachments: draft?.draftAttachments || [],
-    subject: draft?.subject || "",
-    body: draft?.body || "",
+    attachments: draft?.draftAttachments || forwardedMail.attachments || [],
+    subject: draft?.subject || `Fwd: ${forwardedMail.subject}` || "",
+    body:
+      draft?.body ||
+      `\n\n---------- Forwarded message ----------\nFrom: ${
+        forwardedMail.sender?.email
+      }\nDate: ${forwardedMail.createdAt}\nSubject: ${
+        forwardedMail.subject
+      }\nTo: ${forwardedMail.recipients
+        ?.map((r) => r.user.email)
+        .join(", ")}\n\n${forwardedMail.body}` ||
+      "",
   });
 
   const [validationResult, setValidationResult] = useState({
@@ -269,7 +279,7 @@ const ComposeFullCard = () => {
     setComposeData((prev) => ({
       ...prev,
       attachments: prev.attachments.filter(
-        (file) => file.public_id !== publicId
+        (file) => file.publicId !== publicId
       ),
     }));
 
@@ -326,7 +336,7 @@ const ComposeFullCard = () => {
         attachments: composeData.attachments.map((att) => ({
           filename: att.filename,
           url: att.url,
-          publicId: att.public_id,
+          publicId: att.publicId,
         })),
       };
 
@@ -381,7 +391,7 @@ const ComposeFullCard = () => {
           .map((att) => ({
             filename: att.filename,
             url: att.url,
-            public_id: att.public_id,
+            publicId: att.publicId,
           })),
       };
 
@@ -663,7 +673,7 @@ const ComposeFullCard = () => {
           {composeData.attachments?.map((file, index) => (
             <div
               key={
-                file.public_id ||
+                file.publicId ||
                 file.tempId ||
                 `attachment-${index}-${file.filename}`
               }
@@ -676,7 +686,7 @@ const ComposeFullCard = () => {
 
                 {!file.isUploading && (
                   <button
-                    onClick={() => handleDeleteAttachment(file.public_id)}
+                    onClick={() => handleDeleteAttachment(file.publicId)}
                     className="text-gray-500 hover:text-red-500 text-lg leading-none"
                   >
                     ✕
