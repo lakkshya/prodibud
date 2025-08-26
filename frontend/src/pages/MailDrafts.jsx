@@ -91,12 +91,12 @@ const MailDrafts = () => {
       <Navbar />
       {/* Desktop */}
       <main className="hidden md:block h-[calc(100vh-80px)] p-5">
-        <div className="h-full grid grid-cols-10 rounded-4xl overflow-hidden border border-gray-200 shadow-md">
+        <div className="h-full grid grid-cols-10 rounded-2xl overflow-hidden border border-gray-200 shadow-md">
           <div className="col-span-2 overflow-y-auto">
             <MailNavbar />
           </div>
 
-          <div className="col-span-3 overflow-y-auto">
+          <div className="h-full bg-gray-100 col-span-3 overflow-y-auto">
             <DraftsList data={draftsMail} />
           </div>
 

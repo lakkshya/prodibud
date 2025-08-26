@@ -26,7 +26,11 @@ const {
   editDraft,
   deleteDraft,
 } = require("../controllers/mail/draft/draftController");
-const { getSent } = require("../controllers/mail/sent/sentController");
+const {
+  getSentEmails,
+  getSingleSentEmail,
+  deleteSentEmail,
+} = require("../controllers/mail/sent/sentController");
 
 const protect = require("../middlewares/authMiddleware"); //middleware to check JWT
 
@@ -49,10 +53,10 @@ router.get("/inbox/:id", protect, getSingleInboxMail);
 router.put("/inbox/:id/delete", protect, deleteInboxMail);
 
 //trash
-router.put("/trash/restore/:id", protect, restoreEmailFromTrash);
+router.put("/trash/:id/restore", protect, restoreEmailFromTrash);
 router.get("/trash", protect, getTrashEmails);
 router.get("/trash/:id", protect, getSingleTrashEmail);
-router.delete("/trash/delete/:id", protect, deleteFromTrash);
+router.delete("/trash/:id/delete", protect, deleteFromTrash);
 
 //draft
 router.post("/draft", protect, saveDraft);
@@ -62,6 +66,8 @@ router.put("/draft/:id", protect, editDraft);
 router.put("/draft/:id/delete", protect, deleteDraft);
 
 //sent
-router.get("/sent", protect, getSent);
+router.get("/sent", protect, getSentEmails);
+router.get("/sent/:id", protect, getSingleSentEmail);
+router.put("/sent/:id/delete", protect, deleteSentEmail);
 
 module.exports = router;

@@ -73,7 +73,7 @@ const TrashFullCard = ({ mail }) => {
   const restoreFromTrash = async () => {
     try {
       await axios.put(
-        `http://localhost:5000/api/mail/trash/restore/${mail.id}`,
+        `http://localhost:5000/api/mail/trash/${mail.id}/restore`,
         {}, // body is empty, but axios requires a second param before headers
         {
           headers: {
@@ -95,7 +95,7 @@ const TrashFullCard = ({ mail }) => {
   const deleteFromTrash = async () => {
     try {
       await axios.delete(
-        `http://localhost:5000/api/mail/trash/delete/${mail.id}`,
+        `http://localhost:5000/api/mail/trash/${mail.id}/delete`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

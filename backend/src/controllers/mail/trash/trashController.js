@@ -35,6 +35,28 @@ const restoreEmailFromTrash = async (req, res) => {
         .json({ message: "Draft restored from trash successfully" });
     }
 
+    //Check if it is a trashed sent mail
+    const sent = await prisma.email.findFirst({
+      where: {
+        id,
+        senderId: userId,
+        isDraft: false,
+        isSentDeleted: true,
+        isSentPermanentlyDeleted: false,
+      },
+    });
+
+    if (sent) {
+      await prisma.email.update({
+        where: { id },
+        data: { isSentDeleted: false },
+      });
+
+      return res
+        .status(200)
+        .json({ message: "Sent mail restored from trash successfully" });
+    }
+
     //otherwise, for trashed inbox mail
     const recipient = await prisma.recipient.updateMany({
       where: {
@@ -83,98 +105,107 @@ const getTrashEmails = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const [recipientTrash, ccTrash, bccTrash, draftTrash] = await Promise.all([
-      prisma.recipient.findMany({
-        where: {
-          userId,
-          isDeleted: true,
-        },
-        include: {
-          email: {
-            include: {
-              sender: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
+    const [recipientTrash, ccTrash, bccTrash, draftTrash, sentTrash] =
+      await Promise.all([
+        prisma.recipient.findMany({
+          where: {
+            userId,
+            isDeleted: true,
+          },
+          include: {
+            email: {
+              include: {
+                sender: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
                 },
               },
             },
           },
-        },
-      }),
+        }),
 
-      prisma.cCRecipient.findMany({
-        where: {
-          userId,
-          isDeleted: true,
-        },
-        include: {
-          email: {
-            include: {
-              sender: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
+        prisma.cCRecipient.findMany({
+          where: {
+            userId,
+            isDeleted: true,
+          },
+          include: {
+            email: {
+              include: {
+                sender: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
                 },
               },
             },
           },
-        },
-      }),
+        }),
 
-      prisma.bCCRecipient.findMany({
-        where: {
-          userId,
-          isDeleted: true,
-        },
-        include: {
-          email: {
-            include: {
-              sender: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
+        prisma.bCCRecipient.findMany({
+          where: {
+            userId,
+            isDeleted: true,
+          },
+          include: {
+            email: {
+              include: {
+                sender: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                  },
                 },
               },
             },
           },
-        },
-      }),
+        }),
 
-      prisma.email.findMany({
-        where: {
-          senderId: userId,
-          isDraftDeleted: true,
-        },
-        include: {
-          sender: {
-            select: {
-              name: true,
-              email: true,
+        prisma.email.findMany({
+          where: {
+            senderId: userId,
+            isDraftDeleted: true,
+          },
+          include: {
+            sender: {
+              select: {
+                name: true,
+                email: true,
+              },
             },
           },
-        },
-      }),
-    ]);
+        }),
+
+        prisma.email.findMany({
+          where: {
+            senderId: userId,
+            isSentDeleted: true,
+            isSentPermanentlyDeleted: false,
+          },
+          include: {
+            sender: {
+              select: {
+                name: true,
+                email: true,
+              },
+            },
+          },
+        }),
+      ]);
 
     // Flatten and use updatedAt from recipient table
     const allTrash = [
-      ...recipientTrash.map((r) => ({
-        ...r.email,
-        updatedAt: r.updatedAt,
-      })),
-      ...ccTrash.map((c) => ({
-        ...c.email,
-        updatedAt: c.updatedAt,
-      })),
-      ...bccTrash.map((b) => ({
-        ...b.email,
-        updatedAt: b.updatedAt,
-      })),
+      ...recipientTrash.map((r) => r.email),
+      ...ccTrash.map((c) => c.email),
+      ...bccTrash.map((b) => b.email),
       ...draftTrash,
+      ...sentTrash,
     ];
 
     // Sort manually by updatedAt DESC
@@ -238,6 +269,60 @@ const getSingleTrashEmail = async (req, res) => {
         draftCC: ccEmails,
         draftBCC: bccEmails,
       });
+    }
+
+    //check if it is a trashed sent mail
+    const sent = await prisma.email.findFirst({
+      where: {
+        id,
+        senderId: userId,
+        isDraft: false,
+        isSentDeleted: true,
+        isSentPermanentlyDeleted: false,
+      },
+      include: {
+        sender: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        recipients: {
+          include: {
+            user: {
+              select: {
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+        cc: {
+          include: {
+            user: {
+              select: {
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+        bcc: {
+          include: {
+            user: {
+              select: {
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+        attachments: true,
+      },
+    });
+
+    if (sent) {
+      return res.status(200).json(sent);
     }
 
     //otherwise, check if it's a trashed inbox mail
@@ -325,6 +410,28 @@ const deleteFromTrash = async (req, res) => {
       return res
         .status(200)
         .json({ message: "Draft permanently deleted from trash" });
+    }
+
+    //check if the trashed mail is a sent mail
+    const sent = await prisma.email.findFirst({
+      where: {
+        id,
+        senderId: userId,
+        isDraft: false,
+        isSentDeleted: true,
+        isSentPermanentlyDeleted: false,
+      },
+    });
+
+    if (sent) {
+      await prisma.email.update({
+        where: { id },
+        data: { isSentPermanentlyDeleted: true },
+      });
+
+      return res.status(200).json({
+        message: "Sent mail permanently deleted from trash",
+      });
     }
 
     //otherwise, for trashed inbox mail

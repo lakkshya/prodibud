@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 import MailSmallCard from "../MailSmallCard";
 import { LuSearch } from "react-icons/lu";
 
-const InboxList = ({ data }) => {
-  if (data.length === 0) {
+const SentList = ({ data }) => {
+  if (data.length===0) {
     return (
       <div className="w-full h-full flex justify-center items-center bg-gray-100 p-6 text-gray-500">
-        <p>Your inbox is empty</p>
+        <p>Your sent is empty</p>
       </div>
     );
   }
@@ -27,7 +27,7 @@ const InboxList = ({ data }) => {
 
       <div className="flex flex-col gap-2">
         {data.map((mail) => (
-          <Link to={`/mail/inbox/${mail.id}`} key={mail.id}>
+          <Link to={`/mail/sent/${mail.id}`} key={mail.id}>
             <MailSmallCard mail={mail} />
           </Link>
         ))}
@@ -36,4 +36,4 @@ const InboxList = ({ data }) => {
   );
 };
 
-export default InboxList;
+export default SentList;

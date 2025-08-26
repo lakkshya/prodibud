@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import { LuFile, LuInbox, LuPencil, LuTrash2 } from "react-icons/lu";
+import {
+  LuFile,
+  LuInbox,
+  LuPencil,
+  LuSendHorizontal,
+  LuTrash2,
+} from "react-icons/lu";
 import Popup from "../Popup";
 
 const MailNavbar = ({ isDirty }) => {
@@ -37,7 +43,9 @@ const MailNavbar = ({ isDirty }) => {
           to="/mail/inbox"
           className={({ isActive }) =>
             `relative text-left p-3 rounded-4xl ${
-              isActive ? "bg-blue-200 text-black" : "hover:bg-white/50 hover:text-black"
+              isActive
+                ? "bg-blue-200 text-black"
+                : "hover:bg-white/50 hover:text-black"
             }`
           }
           onClick={(e) => handleNavClick(e, "/mail/inbox")}
@@ -52,7 +60,9 @@ const MailNavbar = ({ isDirty }) => {
           to="/mail/drafts"
           className={({ isActive }) =>
             `relative text-left p-3 rounded-4xl ${
-              isActive ? "bg-blue-200 text-black" : "hover:bg-white/50 hover:text-black"
+              isActive
+                ? "bg-blue-200 text-black"
+                : "hover:bg-white/50 hover:text-black"
             }`
           }
           onClick={(e) => handleNavClick(e, "/mail/drafts")}
@@ -64,10 +74,29 @@ const MailNavbar = ({ isDirty }) => {
         </NavLink>
 
         <NavLink
+          to="/mail/sent"
+          className={({ isActive }) =>
+            `relative text-left p-3 rounded-4xl ${
+              isActive
+                ? "bg-blue-200 text-black"
+                : "hover:bg-white/50 hover:text-black"
+            }`
+          }
+          onClick={(e) => handleNavClick(e, "/mail/sent")}
+        >
+          <div className="absolute left-0 inset-y-0 pl-5 flex items-center">
+            <LuSendHorizontal className="w-4 h-4" />
+          </div>
+          <span className="pl-10">Sent</span>
+        </NavLink>
+
+        <NavLink
           to="/mail/trash"
           className={({ isActive }) =>
             `relative text-left p-3 rounded-4xl ${
-              isActive ? "bg-blue-200 text-black" : "hover:bg-white/50 hover:text-black"
+              isActive
+                ? "bg-blue-200 text-black"
+                : "hover:bg-white/50 hover:text-black"
             }`
           }
           onClick={(e) => handleNavClick(e, "/mail/trash")}
