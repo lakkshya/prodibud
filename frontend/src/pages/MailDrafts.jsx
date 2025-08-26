@@ -91,20 +91,16 @@ const MailDrafts = () => {
       <Navbar />
       {/* Desktop */}
       <main className="hidden md:block h-[calc(100vh-80px)] p-5">
-        <div className="h-full grid grid-cols-10 rounded-4xl overflow-hidden">
+        <div className="h-full grid grid-cols-10 rounded-4xl overflow-hidden border border-gray-200 shadow-md">
           <div className="col-span-2 overflow-y-auto">
             <MailNavbar />
           </div>
 
           <div className="col-span-3 overflow-y-auto">
-            {draftsMail.length > 0 ? (
-              <DraftsList data={draftsMail} />
-            ) : (
-              <p>Your drafts is empty</p>
-            )}
+            <DraftsList data={draftsMail} />
           </div>
 
-          <div className="col-span-5 overflow-y-auto">
+          <div className="h-full bg-white col-span-5 overflow-y-auto">
             <DraftsFullCard mail={selectedDraft} />
           </div>
         </div>
@@ -112,10 +108,10 @@ const MailDrafts = () => {
 
       {/* Mobile */}
       <main className="md:hidden flex flex-col gap-2 p-2">
-        <div className="flex justify-between gap-2 bg-white p-2 rounded-xl">
+        <div className="flex justify-between gap-2 bg-blue-100 p-2 rounded-xl">
           <button
             onClick={() => setIsMobileMailNavOpen(true)}
-            className="flex-1 bg-white rounded-full px-2 cursor-pointer"
+            className="flex-1 rounded-full px-2 cursor-pointer"
           >
             <LuMenu className="w-5 h-5 text-gray-400" />
           </button>
@@ -129,7 +125,7 @@ const MailDrafts = () => {
           </div>
         </div>
 
-        <div className="h-[calc(100vh-108px)] overflow-y-auto">
+        <div className="h-[calc(100vh-108px)] overflow-y-auto rounded-xl border border-gray-200 shadow-md">
           {id ? (
             <div className="bg-white rounded-xl py-2">
               <Link to="/mail/drafts" className="flex text-gray-500 p-2 ml-2">
@@ -137,10 +133,8 @@ const MailDrafts = () => {
               </Link>
               <DraftsFullCard mail={selectedDraft} />
             </div>
-          ) : draftsMail.length > 0 ? (
-            <MobileDraftsList data={draftsMail} />
           ) : (
-            <p>Your drafts is empty</p>
+            <MobileDraftsList data={draftsMail} />
           )}
         </div>
       </main>

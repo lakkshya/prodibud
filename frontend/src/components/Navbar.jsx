@@ -52,7 +52,9 @@ const Navbar = () => {
                         : "text-black hover:bg-gray-300"
                     }`
                   }
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                  }}
                 >
                   Mail
                 </NavLink>
@@ -65,7 +67,9 @@ const Navbar = () => {
                         : "text-black hover:bg-gray-300"
                     }`
                   }
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                  }}
                 >
                   Kanban
                 </NavLink>
@@ -78,7 +82,9 @@ const Navbar = () => {
                         : "text-black hover:bg-gray-300"
                     }`
                   }
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                  }}
                 >
                   Calendar
                 </NavLink>
@@ -86,9 +92,9 @@ const Navbar = () => {
             )}
           </div>
           {/* Desktop Nav */}
-          <div className="hidden sm:flex items-center gap-1 bg-white/80 p-1 rounded-4xl">
+          <div className="hidden sm:flex items-center gap-1 bg-gray-200 p-1 rounded-4xl">
             <NavLink
-              to="/mail"
+              to={null}
               className={({ isActive }) =>
                 `flex justify-center px-4 py-2 rounded-4xl ${
                   isActive
@@ -128,7 +134,7 @@ const Navbar = () => {
           {/* Profile Menu */}
           <div className="relative" ref={userMenuRef}>
             <div
-              className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white/80 hover:bg-gray-300 rounded-full cursor-pointer"
+              className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full cursor-pointer"
               onClick={() => setIsUserMenuOpen((prev) => !prev)}
             >
               <LuUserRound className="text-[1.2rem]" />
@@ -137,14 +143,14 @@ const Navbar = () => {
             {isUserMenuOpen && (
               <div className="w-36 absolute right-0 flex flex-col gap-1 mt-1 bg-white rounded-2xl shadow-lg p-1 z-50">
                 <Link
-                  to="/login"
+                  to="/profile"
                   className="flex justify-center px-4 py-2 text-[0.9rem] rounded-2xl text-black hover:bg-gray-300"
                   onClick={() => setIsUserMenuOpen(false)}
                 >
-                  Login
+                  Profile
                 </Link>
                 <button
-                  className="w-full flex justify-center px-4 py-2 text-[0.9rem] rounded-2xl text-black hover:bg-gray-200 cursor-pointer"
+                  className="w-full flex justify-center px-4 py-2 text-[0.9rem] rounded-2xl text-black hover:bg-gray-300 cursor-pointer"
                   onClick={() => {
                     localStorage.removeItem("token");
                     setIsUserMenuOpen(false);

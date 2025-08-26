@@ -196,78 +196,6 @@ const editDraft = async (req, res) => {
   }
 };
 
-const sendDraft = async (req, res) => {
-  const { id } = req.params;
-  const userId = req.user.id;
-
-  try {
-    const draft = await prisma.email.findUnique({
-      where: { id },
-    });
-
-    if (!draft || !draft.isDraft) {
-      return res.status(404).json({ error: "Draft not found" });
-    }
-
-    if (draft.senderId !== userId) {
-      return res.status(403).json({ error: "Unauthorized" });
-    }
-
-    const {
-      draftRecipients = [],
-      draftCC = [],
-      draftBCC = [],
-      draftAttachments = [],
-    } = draft;
-
-    //create related records
-    await prisma.recipient.createMany({
-      data: draftRecipients.map((uid) => ({
-        emailId: id,
-        userId: uid,
-      })),
-    });
-
-    await prisma.cCRecipient.createMany({
-      data: draftCC.map((uid) => ({
-        emailId: id,
-        userId: uid,
-      })),
-    });
-
-    await prisma.bCCRecipient.createMany({
-      data: draftBCC.map((uid) => ({
-        emailId: id,
-        userId: uid,
-      })),
-    });
-
-    await prisma.attachment.createMany({
-      data: draftAttachments.map((att) => ({
-        emailId: id,
-        filename: att.filename,
-        url: att.url,
-      })),
-    });
-
-    //Mark as sent
-    await prisma.email.update({
-      where: { id },
-      data: {
-        isDraft: false,
-        draftRecipients: null,
-        draftCC: null,
-        draftBCC: null,
-        draftAttachments: null,
-      },
-    });
-
-    res.status(200).json({ message: "Draft sent successfully" });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to send draft" });
-  }
-};
-
 const deleteDraft = async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
@@ -292,6 +220,5 @@ module.exports = {
   getDrafts,
   getSingleDraft,
   editDraft,
-  sendDraft,
   deleteDraft,
 };

@@ -64,14 +64,14 @@ const Login = () => {
         <div className="w-full md:w-2/5 flex flex-col justify-center space-y-8 lg:pr-8">
           {/* Logo Section */}
           <div className="text-left">
-            <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl shadow-lg mb-4">
+            <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-gradient-to-r from-blue-800 to-blue-900 rounded-2xl shadow-lg mb-4">
               <MdEmail className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
             <h1 className="text-[1.5rem] md:text-[2rem] font-bold text-gray-800 mb-2">
               Welcome Back
             </h1>
             <p className="text-gray-600 text-[1rem] md:text-[1.2rem]">
-              Sign in to your MailBoard account
+              Sign in to your Prodibud account
             </p>
           </div>
         </div>
@@ -112,7 +112,7 @@ const Login = () => {
                         return updatedErrors;
                       });
                     }}
-                    className={`w-full pl-12 pr-4 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full pl-12 pr-4 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent transition-all duration-200 ${
                       errors.email
                         ? "border-red-300 bg-red-50"
                         : "border-gray-300 bg-gray-50 hover:bg-white focus:bg-white"
@@ -150,7 +150,7 @@ const Login = () => {
                         return updatedErrors;
                       });
                     }}
-                    className={`w-full pl-12 pr-12 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full pl-12 pr-12 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent transition-all duration-200 ${
                       errors.password
                         ? "border-red-300 bg-red-50"
                         : "border-gray-300 bg-gray-50 hover:bg-white focus:bg-white"
@@ -188,19 +188,19 @@ const Login = () => {
               {/* Login Button */}
               <button
                 type="submit"
-                className="w-full text-[0.9rem] md:text-[1rem] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transform hover:-translate-y-0.5 hover:shadow-lg cursor-pointer"
+                className="w-full text-[0.9rem] md:text-[1rem] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 bg-blue-800 hover:bg-blue-900 cursor-pointer"
               >
-                Sign In to MailBoard
+                Sign In to Prodibud
               </button>
 
               {/* Sign Up Link */}
               <div className="text-center pt-4 border-t border-gray-200">
                 <p className="text-[0.875rem] md:text-[0.9rem] text-gray-600">
-                  New to MailBoard?{" "}
+                  New to Prodibud?{" "}
                   <button
                     type="button"
                     onClick={() => navigate("/signup")}
-                    className="text-yellow-600 hover:text-yellow-700 font-medium transition-colors"
+                    className="text-blue-600 hover:text-blue-700 font-medium transition-colors cursor-pointer"
                   >
                     Create your account
                   </button>

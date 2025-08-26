@@ -95,7 +95,7 @@ const DraftsFullCard = ({ mail }) => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col gap-5 bg-white px-5 py-2 md:py-5">
+    <div className="w-full flex flex-col gap-5 bg-white px-5 py-2 md:py-5">
       {/* Header */}
       <div className="flex justify-between">
         <div className="flex items-center gap-3">
@@ -130,29 +130,29 @@ const DraftsFullCard = ({ mail }) => {
             isInfoShowing ? "border-b rounded-t-xl" : "rounded-xl"
           }`}
         >
-          <p className="w-15 text-[0.9rem] text-gray-700">Mail Info</p>
+          <p className="text-[0.9rem] text-gray-700">Mail Info</p>
           {isInfoShowing ? <LuChevronUp /> : <LuChevronDown />}
         </button>
         {isInfoShowing && (
           <div className="flex flex-col gap-1 p-3">
             <div className="flex">
-              <p className="w-15 text-[0.9rem] text-gray-700">From</p>
+              <p className="w-16 text-[0.9rem] text-gray-700">From</p>
               <p className="text-[0.9rem]">{mail.sender.email}</p>
             </div>
             <div className="flex">
-              <p className="w-15 text-[0.9rem] text-gray-700">To</p>
+              <p className="w-16 text-[0.9rem] text-gray-700">To</p>
               <p className="text-[0.9rem]">
                 {mail.draftRecipients.map((r) => r.email)}
               </p>
             </div>
             <div className="flex">
-              <p className="w-15 text-[0.9rem] text-gray-700">Cc</p>
+              <p className="w-16 text-[0.9rem] text-gray-700">Cc</p>
               <p className="text-[0.9rem]">
                 {mail.draftCC.map((r) => r.email)}
               </p>
             </div>
             <div className="flex">
-              <p className="w-15 text-[0.9rem] text-gray-700">Date</p>
+              <p className="w-16 text-[0.9rem] text-gray-700">Date</p>
               <p className="text-[0.9rem]">{formatDate(mail.createdAt)}</p>
             </div>
           </div>

@@ -7,7 +7,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="md:min-h-screen bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 relative overflow-hidden">
+      <section className="md:min-h-screen bg-gradient-to-br from-blue-300 via-blue-500 to-blue-800 relative overflow-hidden">
         <div className="relative flex flex-col items-center gap-10 md:gap-8 px-4 sm:px-6 lg:px-8 py-20 text-center">
           {/* Brand */}
           <img
@@ -29,13 +29,13 @@ const Home = () => {
           <div className="w-7/10 md:w-1/3 flex flex-col md:flex-row items-center justify-center gap-5 mt-5">
             <button
               onClick={() => navigate("/login")}
-              className="w-full px-6 py-2 border-2 border-black rounded-full font-semibold hover:bg-black hover:text-yellow-600 cursor-pointer transition-all duration-300"
+              className="w-full px-6 py-2 border-2 border-black rounded-full font-semibold hover:bg-black hover:text-blue-500 cursor-pointer transition-all duration-300"
             >
               Login
             </button>
             <button
               onClick={() => navigate("/signup")}
-              className="w-full px-6 py-2 bg-black text-yellow-600 border-2 border-black rounded-full font-semibold hover:bg-transparent hover:text-black cursor-pointer transition-all duration-300"
+              className="w-full px-6 py-2 bg-black text-blue-500 border-2 border-black rounded-full font-semibold hover:bg-transparent hover:text-black cursor-pointer transition-all duration-300"
             >
               Sign Up
             </button>
@@ -57,8 +57,8 @@ const Home = () => {
           </div>
 
           <div className="w-full md:w-7/10 grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border-t-4 border-yellow-500">
-              <div className="text-yellow-600 mb-4">
+            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border-t-4 border-blue-500">
+              <div className="text-blue-600 mb-4">
                 <MdEmail className="w-10 h-10" />
               </div>
               <h3 className="text-[1.2rem] font-bold text-gray-900 mb-3">
@@ -70,8 +70,8 @@ const Home = () => {
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border-t-4 border-orange-500">
-              <div className="text-orange-600 mb-4">
+            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border-t-4 border-sky-500">
+              <div className="text-sky-600 mb-4">
                 <MdDashboard className="w-10 h-10" />
               </div>
               <h3 className="text-[1.2rem] font-bold text-gray-900 mb-3">

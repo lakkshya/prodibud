@@ -7,6 +7,7 @@ import MailInbox from "./pages/MailInbox";
 import MailTrash from "./pages/MailTrash";
 import MailCompose from "./pages/MailCompose";
 import MailDrafts from "./pages/MailDrafts";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -15,6 +16,14 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/mail/inbox"
           element={

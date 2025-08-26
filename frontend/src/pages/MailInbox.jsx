@@ -87,24 +87,20 @@ const MailInbox = () => {
   const hideToast = () => setToast(null);
 
   return (
-    <div className="bg-gold-gradient min-h-screen flex flex-col">
+    <div className="bg-white min-h-screen flex flex-col">
       <Navbar />
       {/* Desktop */}
       <main className="hidden md:block h-[calc(100vh-80px)] p-5">
-        <div className="h-full grid grid-cols-10 rounded-4xl overflow-hidden">
+        <div className="h-full grid grid-cols-10 rounded-4xl overflow-hidden border border-gray-200 shadow-md">
           <div className="col-span-2 overflow-y-auto">
             <MailNavbar />
           </div>
 
           <div className="col-span-3 overflow-y-auto">
-            {inboxMail.length > 0 ? (
-              <InboxList data={inboxMail} />
-            ) : (
-              <p>Your inbox is empty</p>
-            )}
+            <InboxList data={inboxMail} />
           </div>
 
-          <div className="col-span-5 overflow-y-auto">
+          <div className="h-full bg-white col-span-5 overflow-y-auto">
             <InboxFullCard mail={selectedMail} />
           </div>
         </div>
@@ -112,10 +108,10 @@ const MailInbox = () => {
 
       {/* Mobile */}
       <main className="md:hidden flex flex-col gap-2 p-2">
-        <div className="flex justify-between gap-2 bg-white p-2 rounded-xl">
+        <div className="flex justify-between gap-2 bg-blue-100 p-2 rounded-xl">
           <button
             onClick={() => setIsMobileMailNavOpen(true)}
-            className="flex-1 bg-white rounded-full px-2 cursor-pointer"
+            className="flex-1 rounded-full px-2 cursor-pointer"
           >
             <LuMenu className="w-5 h-5 text-gray-400" />
           </button>
@@ -129,7 +125,7 @@ const MailInbox = () => {
           </div>
         </div>
 
-        <div className="h-[calc(100vh-108px)] overflow-y-auto">
+        <div className="h-[calc(100vh-108px)] overflow-y-auto rounded-xl border border-gray-200 shadow-md">
           {id ? (
             <div className="bg-white rounded-xl py-2">
               <Link to="/mail/inbox" className="flex text-gray-500 p-2 ml-2">
@@ -137,10 +133,8 @@ const MailInbox = () => {
               </Link>
               <InboxFullCard mail={selectedMail} />
             </div>
-          ) : inboxMail.length > 0 ? (
-            <MobileInboxList data={inboxMail} />
           ) : (
-            <p>Your inbox is empty</p>
+            <MobileInboxList data={inboxMail} />
           )}
         </div>
       </main>

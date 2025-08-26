@@ -114,6 +114,7 @@ const deleteAttachment = async (req, res) => {
 
 const sendEmail = async (req, res) => {
   const {
+    draftId,
     subject,
     body,
     recipients = [],
@@ -158,6 +159,13 @@ const sendEmail = async (req, res) => {
         },
       },
     });
+
+    //delete draft, if present
+    if (draftId) {
+      await prisma.email.delete({
+        where: { id: draftId },
+      });
+    }
 
     res.status(201).json({ message: "Email sent successfully", email });
   } catch (err) {

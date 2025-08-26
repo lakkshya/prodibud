@@ -122,11 +122,11 @@ const Signup = () => {
         <div className="w-full md:w-1/2 flex flex-col justify-center space-y-8 lg:pr-8">
           {/* Logo Section */}
           <div className="text-left">
-            <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl shadow-lg mb-4">
+            <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-gradient-to-r from-blue-800 to-blue-900 rounded-2xl shadow-lg mb-4">
               <MdEmail className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
             <h1 className="text-[1.5rem] md:text-[2rem] font-bold text-gray-800 mb-2">
-              Join MailBoard Today
+              Join Prodibud Today
             </h1>
             <p className="text-gray-600 text-[1rem] md:text-[1.2rem]">
               Create your account and start managing emails efficiently
@@ -136,7 +136,7 @@ const Signup = () => {
           {/* Additional Welcome Content */}
           <div className="space-y-6">
             <div className="flex items-start space-x-4">
-              <div className="w-2 h-2 bg-yellow-500 rounded-full mt-3"></div>
+              <div className="w-2 h-2 bg-blue-800 rounded-full mt-3"></div>
               <div>
                 <h3 className="text-[1.2rem] font-semibold text-gray-800 mb-2">
                   Quick Setup
@@ -148,7 +148,7 @@ const Signup = () => {
               </div>
             </div>
             <div className="flex items-start space-x-4">
-              <div className="w-2 h-2 bg-orange-500 rounded-full mt-3"></div>
+              <div className="w-2 h-2 bg-sky-500 rounded-full mt-3"></div>
               <div>
                 <h3 className="text-[1.2rem] font-semibold text-gray-800 mb-2">
                   Powerful Features
@@ -159,7 +159,7 @@ const Signup = () => {
               </div>
             </div>
             <div className="flex items-start space-x-4">
-              <div className="w-2 h-2 bg-yellow-500 rounded-full mt-3"></div>
+              <div className="w-2 h-2 bg-blue-800 rounded-full mt-3"></div>
               <div>
                 <h3 className="text-[1.2rem] font-semibold text-gray-800 mb-2">
                   Free to Start
@@ -209,7 +209,7 @@ const Signup = () => {
                           return updatedErrors;
                         });
                       }}
-                      className={`w-full pl-12 pr-4 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 ${
+                      className={`w-full pl-12 pr-4 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent transition-all duration-200 ${
                         errors.name
                           ? "border-red-300 bg-red-50"
                           : "border-gray-300 bg-gray-50 hover:bg-white focus:bg-white"
@@ -246,7 +246,7 @@ const Signup = () => {
                           return updatedErrors;
                         });
                       }}
-                      className={`w-full pl-12 pr-4 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 ${
+                      className={`w-full pl-12 pr-4 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent transition-all duration-200 ${
                         errors.dateOfBirth
                           ? "border-red-300 bg-red-50"
                           : "border-gray-300 bg-gray-50 hover:bg-white focus:bg-white"
@@ -284,7 +284,7 @@ const Signup = () => {
                           return updatedErrors;
                         });
                       }}
-                      className={`w-full pl-12 pr-4 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 ${
+                      className={`w-full pl-12 pr-4 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent transition-all duration-200 ${
                         errors.phoneNumber
                           ? "border-red-300 bg-red-50"
                           : "border-gray-300 bg-gray-50 hover:bg-white focus:bg-white"
@@ -342,7 +342,7 @@ const Signup = () => {
                           checkEmailUniqueness(value);
                         }
                       }}
-                      className={`w-full pl-12 pr-4 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 ${
+                      className={`w-full pl-12 pr-4 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent transition-all duration-200 ${
                         errors.email
                           ? "border-red-300 bg-red-50"
                           : "border-gray-300 bg-gray-50 hover:bg-white focus:bg-white"
@@ -398,7 +398,7 @@ const Signup = () => {
                           return updatedErrors;
                         });
                       }}
-                      className={`w-full pl-12 pr-4 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 ${
+                      className={`w-full pl-12 pr-4 py-3 text-[0.9rem] md:text-[1rem] border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent transition-all duration-200 ${
                         errors.password
                           ? "border-red-300 bg-red-50"
                           : "border-gray-300 bg-gray-50 hover:bg-white focus:bg-white"
@@ -416,13 +416,13 @@ const Signup = () => {
                 <button
                   type="submit"
                   disabled={emailStatus === "taken" || isCheckingEmail}
-                  className={`w-full text-[0.9rem] md:text-[1rem] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transform hover:-translate-y-0.5 hover:shadow-lg ${
+                  className={`w-full text-[0.9rem] md:text-[1rem] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200  ${
                     emailStatus === "taken" || isCheckingEmail
                       ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 cursor-pointer"
+                      : "bg-blue-800 hover:bg-blue-900 cursor-pointer"
                   }`}
                 >
-                  Create MailBoard Account
+                  Create Prodibud Account
                 </button>
 
                 {/* Login Link */}
@@ -432,7 +432,7 @@ const Signup = () => {
                     <button
                       type="button"
                       onClick={() => navigate("/login")}
-                      className="text-yellow-600 hover:text-yellow-700 font-medium transition-colors"
+                      className="text-blue-600 hover:text-blue-700 font-medium transition-colors cursor-pointer"
                     >
                       Sign in here
                     </button>

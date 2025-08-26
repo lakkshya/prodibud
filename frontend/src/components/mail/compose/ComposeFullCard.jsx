@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { LuPaperclip, LuTrash2, LuX } from "react-icons/lu";
+import { LuPaperclip, LuSave, LuX } from "react-icons/lu";
 import ProgressBar from "../../ProgressBar";
+import Popup from "../../Popup";
 
-const ComposeFullCard = () => {
+const ComposeFullCard = ({ setIsDirty }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,19 +20,25 @@ const ComposeFullCard = () => {
       draft?.draftRecipients?.map((r) => ({ id: r.id, email: r.email })) || [],
     cc: draft?.draftCC?.map((r) => ({ id: r.id, email: r.email })) || [],
     bcc: draft?.draftBCC?.map((r) => ({ id: r.id, email: r.email })) || [],
-    attachments: draft?.draftAttachments || forwardedMail.attachments || [],
-    subject: draft?.subject || `Fwd: ${forwardedMail.subject}` || "",
+    attachments:
+      draft?.draftAttachments ||
+      (forwardedMail ? forwardedMail.attachments : []),
+    subject:
+      draft?.subject || (forwardedMail ? `Fwd: ${forwardedMail?.subject}` : ""),
     body:
       draft?.body ||
-      `\n\n---------- Forwarded message ----------\nFrom: ${
-        forwardedMail.sender?.email
-      }\nDate: ${forwardedMail.createdAt}\nSubject: ${
-        forwardedMail.subject
-      }\nTo: ${forwardedMail.recipients
-        ?.map((r) => r.user.email)
-        .join(", ")}\n\n${forwardedMail.body}` ||
-      "",
+      (forwardedMail
+        ? `\n\n---------- Forwarded message ----------\nFrom: ${
+            forwardedMail?.sender?.email
+          }\nDate: ${forwardedMail?.createdAt}\nSubject: ${
+            forwardedMail?.subject
+          }\nTo: ${forwardedMail?.recipients
+            ?.map((r) => r.user?.email)
+            .join(", ")}\n\n${forwardedMail?.body}`
+        : ""),
   });
+
+  const [initialData] = useState(composeData); // snapshot at load time
 
   const [validationResult, setValidationResult] = useState({
     recipients: { valid: [], invalid: [] },
@@ -328,6 +335,7 @@ const ComposeFullCard = () => {
     try {
       // Prepare payload
       const payload = {
+        draftId: composeData.draftId,
         subject: composeData.subject,
         body: composeData.body,
         recipients: composeData.recipients.map((u) => u.id),
@@ -357,23 +365,19 @@ const ComposeFullCard = () => {
   };
 
   //DRAFT
+  const [showDraftPrompt, setShowDraftPrompt] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
 
-  const hasAnyContent = () => {
-    const hasRecipients =
-      composeData.recipients.length ||
-      composeData.cc.length ||
-      composeData.bcc.length;
+  const isDirty = useCallback(() => {
+    return JSON.stringify(composeData) !== JSON.stringify(initialData);
+  }, [composeData, initialData]);
 
-    const hasText =
-      (composeData.subject && composeData.subject.trim().length > 0) ||
-      (composeData.body && composeData.body.trim().length > 0);
+  // notify parent whenever "dirty state" changes
+  useEffect(() => {
+    setIsDirty(isDirty());
+  }, [isDirty, setIsDirty]);
 
-    const hasAttachments = (composeData.attachments || []).length > 0;
-
-    return hasRecipients || hasText || hasAttachments;
-  };
-
-  const saveDraftOnce = async () => {
+  const saveDraftOnce = useCallback(async () => {
     try {
       const headers = {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -423,25 +427,28 @@ const ComposeFullCard = () => {
       console.error("Error saving draft:", error);
       throw error; // Re-throw to handle in calling function
     }
-  };
+  }, [composeData]);
 
-  const handleCloseCompose = async () => {
-    if (!hasAnyContent()) {
-      return navigate("/mail/inbox");
-    }
-
-    try {
-      await saveDraftOnce();
-      navigate("/mail/inbox", {
-        state: { toast: { message: "Saved to drafts", type: "Success" } },
-      });
-    } catch (err) {
-      console.error("Failed to save draft on close:", err);
-      navigate("/mail/inbox", {
-        state: { toast: { message: "Couldn't save draft", type: "Error" } },
-      });
+  const saveDraftAndNavigate = async () => {
+    if (isDirty()) {
+      setPendingNavigation("/mail/inbox");
+      setShowDraftPrompt(true);
+    } else {
+      navigate("/mail/inbox");
     }
   };
+
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (isDirty()) {
+        e.preventDefault();
+        e.returnValue = ""; // Required for Chrome to show dialog
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
 
   return (
     <div className="w-full h-full flex flex-col gap-5 bg-white px-5 py-2 md:py-5">
@@ -453,7 +460,7 @@ const ComposeFullCard = () => {
         <div className="flex items-center gap-1">
           <button
             onClick={handleSendEmail}
-            className="flex justify-center items-center bg-amber-400 hover:bg-gray-200 px-4 py-2 rounded-2xl cursor-pointer"
+            className="flex justify-center items-center bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-2xl cursor-pointer"
           >
             Send
           </button>
@@ -471,16 +478,10 @@ const ComposeFullCard = () => {
             <LuPaperclip className="w-4 h-4" />
           </button>
           <button
-            // onClick={moveToTrash}
+            onClick={saveDraftAndNavigate}
             className="w-8 h-8 flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer"
           >
-            <LuTrash2 className="w-4 h-4" />
-          </button>
-          <button
-            onClick={handleCloseCompose}
-            className="w-8 h-8 flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer"
-          >
-            <LuX className="w-4 h-4" />
+            <LuSave className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -701,6 +702,46 @@ const ComposeFullCard = () => {
           ))}
         </div>
       </div>
+
+      {showDraftPrompt && (
+        <Popup
+          title="Save Draft?"
+          message="Do you want to save this email as a draft before leaving?"
+          onClose={() => setShowDraftPrompt(false)}
+          actions={[
+            {
+              label: "Don’t Save",
+              className: "bg-gray-200 hover:bg-gray-300",
+              onClick: () => {
+                if (pendingNavigation) {
+                  navigate(pendingNavigation);
+                }
+                setShowDraftPrompt(false);
+              },
+            },
+            {
+              label: "Save",
+              className: "bg-gray-200 hover:bg-gray-300",
+              onClick: async () => {
+                try {
+                  await saveDraftOnce();
+                  if (pendingNavigation) {
+                    navigate(pendingNavigation, {
+                      state: {
+                        toast: { message: "Saved to drafts", type: "Success" },
+                      },
+                    });
+                  }
+                } catch (err) {
+                  console.error("Draft save failed:", err);
+                } finally {
+                  setShowDraftPrompt(false);
+                }
+              },
+            },
+          ]}
+        />
+      )}
     </div>
   );
 };

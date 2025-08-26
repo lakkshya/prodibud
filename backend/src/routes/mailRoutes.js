@@ -24,10 +24,10 @@ const {
   getDrafts,
   getSingleDraft,
   editDraft,
-  sendDraft,
   deleteDraft,
 } = require("../controllers/mail/draft/draftController");
 const { getSent } = require("../controllers/mail/sent/sentController");
+
 const protect = require("../middlewares/authMiddleware"); //middleware to check JWT
 
 router.put("/read/:emailId", protect, markAsRead);
@@ -59,7 +59,6 @@ router.post("/draft", protect, saveDraft);
 router.get("/drafts", protect, getDrafts);
 router.get("/draft/:id", protect, getSingleDraft);
 router.put("/draft/:id", protect, editDraft);
-router.post("/draft/:id/send", protect, sendDraft);
 router.put("/draft/:id/delete", protect, deleteDraft);
 
 //sent
