@@ -35,9 +35,9 @@ const MobileMailSmallCard = ({ mail }) => {
     return initials.slice(0, 2);
   };
 
-  const getFormattedTimeOrDate = (createdAt) => {
+  const getFormattedTimeOrDate = (updatedAt) => {
     const now = new Date();
-    const created = new Date(createdAt);
+    const created = new Date(updatedAt);
     const diffInMins = now - created;
     const diffInHours = diffInMins / (1000 * 60 * 60);
 
@@ -76,7 +76,7 @@ const MobileMailSmallCard = ({ mail }) => {
       </div>
       <div>
         <p className="text-[0.75rem] md:text-[0.8rem]">
-          {getFormattedTimeOrDate(mail.createdAt)}
+          {getFormattedTimeOrDate(mail.updatedAt)}
         </p>
       </div>
     </div>

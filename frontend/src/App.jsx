@@ -8,6 +8,7 @@ import MailTrash from "./pages/MailTrash";
 import MailCompose from "./pages/MailCompose";
 import MailDrafts from "./pages/MailDrafts";
 import Profile from "./pages/Profile";
+import MailSent from "./pages/MailSent";
 
 function App() {
   return (
@@ -77,6 +78,22 @@ function App() {
           element={
             <ProtectedRoute>
               <MailDrafts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mail/sent"
+          element={
+            <ProtectedRoute>
+              <MailSent />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mail/sent/:id"
+          element={
+            <ProtectedRoute>
+              <MailSent />
             </ProtectedRoute>
           }
         />

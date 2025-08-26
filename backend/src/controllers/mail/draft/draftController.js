@@ -49,7 +49,7 @@ const getDrafts = async (req, res) => {
         draftBCC: true,
         draftAttachments: true,
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { updatedAt: "desc" },
     });
 
     res.status(200).json({ drafts });

@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import { LuFile, LuInbox, LuPencil, LuTrash2 } from "react-icons/lu";
+import {
+  LuFile,
+  LuInbox,
+  LuPencil,
+  LuSendHorizontal,
+  LuTrash2,
+} from "react-icons/lu";
 import Popup from "../Popup";
 
 const MobileMailNavbar = ({ isDirty }) => {
@@ -65,6 +71,23 @@ const MobileMailNavbar = ({ isDirty }) => {
             <LuFile className="w-4 h-4" />
           </div>
           <span className="text-[0.9rem] pl-10">Drafts</span>
+        </NavLink>
+
+        <NavLink
+          to="/mail/sent"
+          className={({ isActive }) =>
+            `relative flex items-center text-left p-3 rounded-4xl ${
+              isActive
+                ? "bg-blue-200 text-black"
+                : "hover:bg-white/50 hover:text-black"
+            }`
+          }
+          onClick={(e) => handleNavClick(e, "/mail/sent")}
+        >
+          <div className="absolute left-0 inset-y-0 pl-5 flex items-center">
+            <LuSendHorizontal className="w-4 h-4" />
+          </div>
+          <span className="text-[0.9rem] pl-10">Sent</span>
         </NavLink>
 
         <NavLink

@@ -4,6 +4,7 @@ import axios from "axios";
 import {
   LuChevronDown,
   LuChevronUp,
+  LuForward,
   LuTrash2,
   LuArrowDownToLine,
 } from "react-icons/lu";
@@ -27,9 +28,9 @@ const COLORS = [
   "#795548",
 ];
 
-const DraftsFullCard = ({ mail }) => {
+const SentFullCard = ({ mail }) => {
   const navigate = useNavigate();
-
+  
   const [isInfoShowing, setIsInfoShowing] = useState(false);
 
   if (!mail) {
@@ -69,14 +70,18 @@ const DraftsFullCard = ({ mail }) => {
     });
   };
 
-  const handleEditDraft = () => {
-    navigate("/mail/compose", { state: { draft: mail } });
+  const handleMailForward = () => {
+    navigate("/mail/compose", {
+      state: {
+        forwardedMail: mail,
+      },
+    });
   };
 
   const moveToTrash = async () => {
     try {
       await axios.put(
-        `http://localhost:5000/api/mail/draft/${mail.id}/delete`,
+        `http://localhost:5000/api/mail/sent/${mail.id}/delete`,
         {}, // body is empty, but axios requires a second param before headers
         {
           headers: {
@@ -84,9 +89,9 @@ const DraftsFullCard = ({ mail }) => {
           },
         }
       );
-      navigate("/mail/drafts", {
+      navigate("/mail/sent", {
         state: {
-          toast: { message: "Draft moved to trash", type: "Success" },
+          toast: { message: "Email moved to trash", type: "Success" },
         },
       });
     } catch (error) {
@@ -109,10 +114,10 @@ const DraftsFullCard = ({ mail }) => {
         </div>
         <div className="flex items-center gap-1">
           <button
-            onClick={handleEditDraft}
-            className="flex justify-center items-center bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-2xl cursor-pointer"
+            onClick={handleMailForward}
+            className="w-8 h-8 flex justify-center items-center hover:bg-gray-200 rounded-full cursor-pointer"
           >
-            Edit
+            <LuForward className="w-4 h-4" />
           </button>
           <button
             onClick={moveToTrash}
@@ -142,13 +147,13 @@ const DraftsFullCard = ({ mail }) => {
             <div className="flex">
               <p className="w-16 text-[0.9rem] text-gray-700">To</p>
               <p className="text-[0.9rem]">
-                {mail.draftRecipients.map((r) => r.email)}
+                {mail.recipients.map((r) => r.user.email)}
               </p>
             </div>
             <div className="flex">
               <p className="w-16 text-[0.9rem] text-gray-700">Cc</p>
               <p className="text-[0.9rem]">
-                {mail.draftCC.map((r) => r.email)}
+                {mail.cc.map((r) => r.user.email)}
               </p>
             </div>
             <div className="flex">
@@ -167,7 +172,7 @@ const DraftsFullCard = ({ mail }) => {
       </div>
       {/* Attachments */}
       <div className="grid sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-2 mb-6">
-        {mail.draftAttachments?.map((file, index) => (
+        {mail.attachments?.map((file, index) => (
           <div
             key={
               file.public_id ||
@@ -199,4 +204,4 @@ const DraftsFullCard = ({ mail }) => {
   );
 };
 
-export default DraftsFullCard;
+export default SentFullCard;

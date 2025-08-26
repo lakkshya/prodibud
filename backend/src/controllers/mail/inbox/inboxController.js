@@ -49,21 +49,9 @@ const getInboxMails = async (req, res) => {
 
     // Combine and flatten
     const allInbox = [
-      ...recipientMails.map((r) => ({
-        ...r.email,
-        updatedAt: r.updatedAt,
-        role: "To", // Optional: To show role
-      })),
-      ...ccMails.map((c) => ({
-        ...c.email,
-        updatedAt: c.updatedAt,
-        role: "CC",
-      })),
-      ...bccMails.map((b) => ({
-        ...b.email,
-        updatedAt: b.updatedAt,
-        role: "BCC",
-      })),
+      ...recipientMails.map((r) => r.email),
+      ...ccMails.map((c) => c.email),
+      ...bccMails.map((b) => b.email),
     ];
 
     // Remove duplicates (in case the same user is in both To and CC)
