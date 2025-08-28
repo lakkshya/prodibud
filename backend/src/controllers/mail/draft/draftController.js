@@ -19,10 +19,29 @@ const saveDraft = async (req, res) => {
         body,
         senderId: userId,
         isDraft: true,
-        draftRecipients: recipients,
-        draftCC: cc,
-        draftBCC: bcc,
-        draftAttachments: attachments,
+        recipients: {
+          create: recipients.map((r) => ({ userId: r, isDraft: true })),
+        },
+        cc: {
+          create: cc.map((r) => ({ userId: r, isDraft: true })),
+        },
+        bcc: {
+          create: bcc.map((r) => ({ userId: r, isDraft: true })),
+        },
+        attachments: {
+          create: attachments.map((att) => ({
+            filename: att.filename,
+            url: att.url,
+            publicId: att.publicId,
+            isDraft: true,
+          })),
+        },
+      },
+      include: {
+        recipients: { select: { id: true, userId: true } },
+        cc: { select: { id: true, userId: true } },
+        bcc: { select: { id: true, userId: true } },
+        attachments: true,
       },
     });
 
@@ -44,15 +63,28 @@ const getDrafts = async (req, res) => {
         subject: true,
         body: true,
         createdAt: true,
-        draftRecipients: true,
-        draftCC: true,
-        draftBCC: true,
-        draftAttachments: true,
+        updatedAt: true,
+        recipients: {
+          where: { isDraft: true },
+          select: { user: { select: { id: true, email: true } } },
+        },
+        cc: {
+          where: { isDraft: true },
+          select: { user: { select: { id: true, email: true } } },
+        },
+        bcc: {
+          where: { isDraft: true },
+          select: { user: { select: { id: true, email: true } } },
+        },
+        attachments: {
+          where: { isDraft: true },
+          select: { id: true, filename: true, url: true, publicId: true },
+        },
       },
       orderBy: { updatedAt: "desc" },
     });
 
-    res.status(200).json({ drafts });
+    res.status(200).json(drafts);
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Failed to fetch drafts" });
@@ -64,12 +96,12 @@ const getSingleDraft = async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Find the draft belonging to the logged-in user
     const draft = await prisma.email.findFirst({
       where: {
         id,
         senderId: userId,
         isDraft: true,
+        isDraftDeleted: false,
       },
       select: {
         id: true,
@@ -78,10 +110,22 @@ const getSingleDraft = async (req, res) => {
         body: true,
         createdAt: true,
         updatedAt: true,
-        draftRecipients: true,
-        draftCC: true,
-        draftBCC: true,
-        draftAttachments: true,
+        recipients: {
+          where: { isDraft: true },
+          select: { user: { select: { id: true, email: true } } },
+        },
+        cc: {
+          where: { isDraft: true },
+          select: { user: { select: { id: true, email: true } } },
+        },
+        bcc: {
+          where: { isDraft: true },
+          select: { user: { select: { id: true, email: true } } },
+        },
+        attachments: {
+          where: { isDraft: true },
+          select: { id: true, filename: true, url: true, publicId: true },
+        },
       },
     });
 
@@ -90,43 +134,7 @@ const getSingleDraft = async (req, res) => {
       return res.status(404).json({ message: "Draft not found" });
     }
 
-    //extract the IDs
-    const recipientIds = draft.draftRecipients;
-    const ccIds = draft.draftCC;
-    const bccIds = draft.draftBCC;
-
-    //fetch user info for those ids
-    const [recipientEmails, ccEmails, bccEmails] = await Promise.all([
-      prisma.user.findMany({
-        where: { id: { in: recipientIds } },
-        select: { id: true, email: true },
-      }),
-      prisma.user.findMany({
-        where: { id: { in: ccIds } },
-        select: { id: true, email: true },
-      }),
-      prisma.user.findMany({
-        where: { id: { in: bccIds } },
-        select: { id: true, email: true },
-      }),
-    ]);
-
-    // Transform draft attachments to include public_id
-    const transformedAttachments = (draft.draftAttachments || []).map(
-      (att) => ({
-        ...att,
-        public_id: att.public_id,
-        isUploading: false,
-      })
-    );
-
-    res.status(200).json({
-      ...draft,
-      draftRecipients: recipientEmails,
-      draftCC: ccEmails,
-      draftBCC: bccEmails,
-      draftAttachments: transformedAttachments,
-    });
+    res.status(200).json(draft);
   } catch (error) {
     console.error("Error fetching draft:", error);
     res.status(500).json({ message: "Server error" });
@@ -152,15 +160,23 @@ const editDraft = async (req, res) => {
         id,
         senderId: userId,
         isDraft: true,
-        isDraftDeleted: false, // Don't allow editing deleted drafts
+        isDraftDeleted: false,
       },
     });
 
     if (!existingDraft) {
       return res.status(404).json({
-        error: "Draft not found or you don't have permission to edit it",
+        error: "Draft not found",
       });
     }
+
+    // Remove old recipients/cc/bcc/attachments
+    await Promise.all([
+      prisma.recipient.deleteMany({ where: { emailId: id, isDraft: true } }),
+      prisma.cCRecipient.deleteMany({ where: { emailId: id, isDraft: true } }),
+      prisma.bCCRecipient.deleteMany({ where: { emailId: id, isDraft: true } }),
+      prisma.attachment.deleteMany({ where: { emailId: id, isDraft: true } }),
+    ]);
 
     // Update the draft
     const updatedDraft = await prisma.email.update({
@@ -168,28 +184,33 @@ const editDraft = async (req, res) => {
       data: {
         subject,
         body,
-        draftRecipients: recipients,
-        draftCC: cc,
-        draftBCC: bcc,
-        draftAttachments: attachments,
-        updatedAt: new Date(), // Explicitly update timestamp if needed
+        recipients: {
+          create: recipients.map((r) => ({ userId: r, isDraft: true })),
+        },
+        cc: {
+          create: cc.map((r) => ({ userId: r, isDraft: true })),
+        },
+        bcc: {
+          create: bcc.map((r) => ({ userId: r, isDraft: true })),
+        },
+        attachments: {
+          create: attachments.map((att) => ({
+            filename: att.filename,
+            url: att.url,
+            publicId: att.publicId,
+            isDraft: true,
+          })),
+        },
       },
-      select: {
-        id: true,
-        subject: true,
-        body: true,
-        draftRecipients: true,
-        draftCC: true,
-        draftBCC: true,
-        draftAttachments: true,
-        updatedAt: true,
+      include: {
+        recipients: { select: { user: { select: { id: true, email: true } } } },
+        cc: { select: { user: { select: { id: true, email: true } } } },
+        bcc: { select: { user: { select: { id: true, email: true } } } },
+        attachments: true,
       },
     });
 
-    res.status(200).json({
-      message: "Draft updated successfully",
-      draft: updatedDraft,
-    });
+    res.status(200).json(updatedDraft);
   } catch (err) {
     console.error("Update draft error:", err);
     res.status(500).json({ error: "Failed to update draft" });
@@ -201,11 +222,26 @@ const deleteDraft = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    await prisma.email.update({
-      where: { id, senderId: userId },
-      data: {
-        isDraftDeleted: true,
-      },
+    await prisma.$transaction(async (tx) => {
+      await tx.email.updateMany({
+        where: { id, senderId: userId, isDraft: true, isDraftDeleted: false },
+        data: { isDraftDeleted: true },
+      });
+
+      await tx.recipient.updateMany({
+        where: { emailId: id },
+        data: { isDeleted: true },
+      });
+
+      await tx.cCRecipient.updateMany({
+        where: { emailId: id },
+        data: { isDeleted: true },
+      });
+
+      await tx.bCCRecipient.updateMany({
+        where: { emailId: id },
+        data: { isDeleted: true },
+      });
     });
 
     res.status(200).json({ message: "Draft moved to trash" });

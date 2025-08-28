@@ -1,9 +1,10 @@
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate, useMatch } from "react-router-dom";
 import { LuEllipsis, LuUserRound } from "react-icons/lu";
 import { useEffect, useRef, useState } from "react";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const matchInbox = useMatch("/mail/*"); // matches both /mail/inbox and /mail/inbox/:id
 
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -94,14 +95,13 @@ const Navbar = () => {
           {/* Desktop Nav */}
           <div className="hidden sm:flex items-center gap-1 bg-gray-200 p-1 rounded-4xl">
             <NavLink
-              to={null}
-              className={({ isActive }) =>
-                `flex justify-center px-4 py-2 rounded-4xl ${
-                  isActive
-                    ? "bg-gray-800 text-white"
-                    : "text-black hover:bg-gray-300"
-                }`
-              }
+              to="/mail/inbox"
+              end={false}
+              className={`flex justify-center px-4 py-2 rounded-4xl ${
+                matchInbox
+                  ? "bg-gray-800 text-white"
+                  : "text-black hover:bg-gray-300"
+              }`}
             >
               <h1 className="text-[1rem]">Mail</h1>
             </NavLink>

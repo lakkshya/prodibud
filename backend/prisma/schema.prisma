@@ -35,53 +35,53 @@ model Email {
     updatedAt                DateTime       @updatedAt
     threadId                 String? //optional, for replies/thread view
     isDraft                  Boolean        @default(false)
-    draftRecipients          Json? //store array of userId
-    draftCC                  Json?
-    draftBCC                 Json?
-    draftAttachments         Json? //store array of {filename, url}
     isDraftDeleted           Boolean        @default(false)
     isSentDeleted            Boolean        @default(false)
     isSentPermanentlyDeleted Boolean        @default(false)
 }
 
 model Attachment {
-    id       String @id @default(uuid())
+    id       String  @id @default(uuid())
     filename String
     url      String
     publicId String
-    email    Email  @relation(fields: [emailId], references: [id])
+    email    Email   @relation(fields: [emailId], references: [id], onDelete: Cascade)
     emailId  String
+    isDraft  Boolean @default(false)
 }
 
 model Recipient {
     id        String   @id @default(uuid())
-    email     Email    @relation(fields: [emailId], references: [id])
+    email     Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
     emailId   String
     user      User     @relation(fields: [userId], references: [id])
     userId    String
     read      Boolean  @default(false)
     isDeleted Boolean  @default(false)
     updatedAt DateTime @updatedAt
+    isDraft   Boolean  @default(false)
 }
 
 model CCRecipient {
     id        String   @id @default(uuid())
-    email     Email    @relation(fields: [emailId], references: [id])
+    email     Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
     emailId   String
     user      User     @relation(fields: [userId], references: [id])
     userId    String
     read      Boolean  @default(false)
     isDeleted Boolean  @default(false)
     updatedAt DateTime @updatedAt
+    isDraft   Boolean  @default(false)
 }
 
 model BCCRecipient {
     id        String   @id @default(uuid())
-    email     Email    @relation(fields: [emailId], references: [id])
+    email     Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
     emailId   String
     user      User     @relation(fields: [userId], references: [id])
     userId    String
     read      Boolean  @default(false)
     isDeleted Boolean  @default(false)
     updatedAt DateTime @updatedAt
+    isDraft   Boolean  @default(false)
 }

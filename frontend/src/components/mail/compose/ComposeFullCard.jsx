@@ -17,12 +17,12 @@ const ComposeFullCard = ({ setIsDirty }) => {
   const [composeData, setComposeData] = useState({
     draftId: draft?.id || null,
     recipients:
-      draft?.draftRecipients?.map((r) => ({ id: r.id, email: r.email })) || [],
-    cc: draft?.draftCC?.map((r) => ({ id: r.id, email: r.email })) || [],
-    bcc: draft?.draftBCC?.map((r) => ({ id: r.id, email: r.email })) || [],
+      draft?.recipients?.map((r) => ({ id: r.user.id, email: r.user.email })) ||
+      [],
+    cc: draft?.cc?.map((r) => ({ id: r.user.id, email: r.user.email })) || [],
+    bcc: draft?.bcc?.map((r) => ({ id: r.user.id, email: r.user.email })) || [],
     attachments:
-      draft?.draftAttachments ||
-      (forwardedMail ? forwardedMail.attachments : []),
+      draft?.attachments || (forwardedMail ? forwardedMail.attachments : []),
     subject:
       draft?.subject || (forwardedMail ? `Fwd: ${forwardedMail?.subject}` : ""),
     body:
@@ -101,13 +101,14 @@ const ComposeFullCard = ({ setIsDirty }) => {
       const invalidEmails = res.data[field]?.invalid || [];
 
       // Update composeData with valid users (store email + id)
-      setComposeData((prev) => ({
-        ...prev,
-        [field]: [
-          ...prev[field].filter((u) => u.id), // keep existing valid ones
-          ...validUsers,
-        ],
-      }));
+      setComposeData((prev) => {
+        const merged = [...prev[field], ...validUsers];
+        const unique = merged.filter(
+          (obj, index, self) =>
+            index === self.findIndex((o) => o.email === obj.email)
+        );
+        return { ...prev, [field]: unique };
+      });
 
       // Update invalid list for UI
       setValidationResult((prev) => ({
@@ -162,9 +163,9 @@ const ComposeFullCard = ({ setIsDirty }) => {
     };
 
     if (draft) {
-      const recips = draft.draftRecipients?.map((r) => r.email) || [];
-      const ccs = draft.draftCC?.map((r) => r.email) || [];
-      const bccs = draft.draftBCC?.map((r) => r.email) || [];
+      const recips = draft.recipients?.map((r) => r.user.email) || [];
+      const ccs = draft.cc?.map((r) => r.user.email) || [];
+      const bccs = draft.bcc?.map((r) => r.user.email) || [];
 
       setValidationResult({
         recipients: validateEmails(recips),
@@ -401,6 +402,7 @@ const ComposeFullCard = ({ setIsDirty }) => {
 
       let response;
       if (composeData.draftId) {
+        console.log(payload);
         const id = composeData.draftId;
         response = await axios.put(
           `http://localhost:5000/api/mail/draft/${id}`,
@@ -409,6 +411,7 @@ const ComposeFullCard = ({ setIsDirty }) => {
             headers,
           }
         );
+
         return id;
       } else {
         // your backend returns { message, draft }
