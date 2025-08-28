@@ -3,12 +3,13 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
-import MailInbox from "./pages/MailInbox";
-import MailTrash from "./pages/MailTrash";
-import MailCompose from "./pages/MailCompose";
-import MailDrafts from "./pages/MailDrafts";
 import Profile from "./pages/Profile";
-import MailSent from "./pages/MailSent";
+import Inbox from "./pages/mail/Inbox";
+import Trash from "./pages/mail/Trash";
+import Compose from "./pages/mail/Compose";
+import Drafts from "./pages/mail/Drafts";
+import Sent from "./pages/mail/Sent";
+import Boards from "./pages/kanban/Boards";
 
 function App() {
   return (
@@ -29,7 +30,7 @@ function App() {
           path="/mail/inbox"
           element={
             <ProtectedRoute>
-              <MailInbox />
+              <Inbox />
             </ProtectedRoute>
           }
         />
@@ -37,7 +38,7 @@ function App() {
           path="/mail/inbox/:id"
           element={
             <ProtectedRoute>
-              <MailInbox />
+              <Inbox />
             </ProtectedRoute>
           }
         />
@@ -45,7 +46,7 @@ function App() {
           path="/mail/trash"
           element={
             <ProtectedRoute>
-              <MailTrash />
+              <Trash />
             </ProtectedRoute>
           }
         />
@@ -53,7 +54,7 @@ function App() {
           path="/mail/trash/:id"
           element={
             <ProtectedRoute>
-              <MailTrash />
+              <Trash />
             </ProtectedRoute>
           }
         />
@@ -61,7 +62,7 @@ function App() {
           path="/mail/compose"
           element={
             <ProtectedRoute>
-              <MailCompose />
+              <Compose />
             </ProtectedRoute>
           }
         />
@@ -69,7 +70,7 @@ function App() {
           path="/mail/drafts"
           element={
             <ProtectedRoute>
-              <MailDrafts />
+              <Drafts />
             </ProtectedRoute>
           }
         />
@@ -77,7 +78,7 @@ function App() {
           path="/mail/drafts/:id"
           element={
             <ProtectedRoute>
-              <MailDrafts />
+              <Drafts />
             </ProtectedRoute>
           }
         />
@@ -85,7 +86,7 @@ function App() {
           path="/mail/sent"
           element={
             <ProtectedRoute>
-              <MailSent />
+              <Sent />
             </ProtectedRoute>
           }
         />
@@ -93,7 +94,15 @@ function App() {
           path="/mail/sent/:id"
           element={
             <ProtectedRoute>
-              <MailSent />
+              <Sent />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/kanban/boards"
+          element={
+            <ProtectedRoute>
+              <Boards />
             </ProtectedRoute>
           }
         />

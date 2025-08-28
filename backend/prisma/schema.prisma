@@ -9,16 +9,19 @@ datasource db {
 }
 
 model User {
-    id             String         @id @default(uuid())
-    name           String         @db.VarChar(255)
-    phoneNumber    String         @unique @db.VarChar(20)
-    dateOfBirth    DateTime
-    email          String         @unique
-    password       String
-    sentEmails     Email[]        @relation("SentEmails")
-    receivedEmails Recipient[]
-    ccEmails       CCRecipient[]
-    bccEmails      BCCRecipient[]
+    id               String         @id @default(uuid())
+    name             String         @db.VarChar(255)
+    phoneNumber      String         @unique @db.VarChar(20)
+    dateOfBirth      DateTime
+    email            String         @unique
+    password         String
+    //relations
+    sentEmails       Email[]        @relation("SentEmails")
+    receivedEmails   Recipient[]
+    ccEmails         CCRecipient[]
+    bccEmails        BCCRecipient[]
+    ownedBoards      Board[]
+    boardMemberships BoardMember[]
 }
 
 model Email {
@@ -84,4 +87,48 @@ model BCCRecipient {
     isDeleted Boolean  @default(false)
     updatedAt DateTime @updatedAt
     isDraft   Boolean  @default(false)
+}
+
+model Board {
+    id        String        @id @default(uuid())
+    name      String
+    createdAt DateTime      @default(now())
+    updatedAt DateTime      @updatedAt
+    ownerId   String
+    owner     User          @relation(fields: [ownerId], references: [id])
+    //relations
+    columns   Column[]
+    members   BoardMember[]
+}
+
+model BoardMember {
+    id      String @id @default(uuid())
+    boardId String
+    board   Board  @relation(fields: [boardId], references: [id])
+    userId  String
+    user    User   @relation(fields: [userId], references: [id])
+    status  String @default("pending") // pending, accepted, rejected
+    role    String @default("member") // admin, member
+}
+
+model Column {
+    id       String @id @default(uuid())
+    name     String
+    position Int
+    boardId  String
+    board    Board  @relation(fields: [boardId], references: [id])
+    //relations
+    cards    Card[]
+}
+
+model Card {
+    id          String    @id @default(uuid())
+    title       String
+    description String?
+    position    Int
+    dueDate     DateTime?
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    columnId    String
+    column      Column    @relation(fields: [columnId], references: [id])
 }

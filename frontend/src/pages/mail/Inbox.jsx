@@ -2,15 +2,15 @@ import { useEffect, useState } from "react";
 import { useLocation, useParams, Link } from "react-router-dom";
 import axios from "axios";
 
-import Navbar from "../components/Navbar";
-import Toast from "../components/Toast";
-import InboxList from "../components/mail/inbox/InboxList";
-import InboxFullCard from "../components/mail/inbox/InboxFullCard";
-import MailNavbar from "../components/mail/MailNavbar";
+import Navbar from "../../components/Navbar";
+import Toast from "../../components/Toast";
+import InboxList from "../../components/mail/inbox/InboxList";
+import InboxFullCard from "../../components/mail/inbox/InboxFullCard";
+import MailNavbar from "../../components/mail/MailNavbar";
 import { LuArrowLeft } from "react-icons/lu";
-import MobileInboxList from "../components/mail/inbox/MobileInboxList";
+import MobileInboxList from "../../components/mail/inbox/MobileInboxList";
 
-const MailInbox = () => {
+const Inbox = () => {
   const location = useLocation();
   const { id } = useParams();
 
@@ -121,4 +121,4 @@ const MailInbox = () => {
   );
 };
 
-export default MailInbox;
+export default Inbox;

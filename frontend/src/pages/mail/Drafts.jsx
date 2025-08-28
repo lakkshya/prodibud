@@ -2,15 +2,15 @@ import { useEffect, useState } from "react";
 import { useLocation, useParams, Link } from "react-router-dom";
 import axios from "axios";
 
-import Navbar from "../components/Navbar";
-import Toast from "../components/Toast";
-import DraftsFullCard from "../components/mail/drafts/DraftsFullCard";
-import MailNavbar from "../components/mail/MailNavbar";
+import Navbar from "../../components/Navbar";
+import Toast from "../../components/Toast";
+import DraftsFullCard from "../../components/mail/drafts/DraftsFullCard";
+import MailNavbar from "../../components/mail/MailNavbar";
 import { LuArrowLeft } from "react-icons/lu";
-import DraftsList from "../components/mail/drafts/DraftsList";
-import MobileDraftsList from "../components/mail/drafts/MobileDraftsList";
+import DraftsList from "../../components/mail/drafts/DraftsList";
+import MobileDraftsList from "../../components/mail/drafts/MobileDraftsList";
 
-const MailDrafts = () => {
+const Drafts = () => {
   const location = useLocation();
   const { id } = useParams();
 
@@ -121,4 +121,4 @@ const MailDrafts = () => {
   );
 };
 
-export default MailDrafts;
+export default Drafts;

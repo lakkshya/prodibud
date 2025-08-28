@@ -45,14 +45,12 @@ const Navbar = () => {
             {isMobileMenuOpen && (
               <div className="w-30 absolute right-0 flex flex-col gap-1 mt-1 bg-white rounded-2xl shadow-lg p-1 z-50">
                 <NavLink
-                  to="/mail"
-                  className={({ isActive }) =>
-                    `flex justify-center px-4 py-2 text-[0.9rem] rounded-2xl ${
-                      isActive
-                        ? "bg-gray-800 text-white"
-                        : "text-black hover:bg-gray-300"
-                    }`
-                  }
+                  to="/mail/inbox"
+                  className={`flex justify-center px-4 py-2 text-[0.9rem] rounded-2xl ${
+                    matchInbox
+                      ? "bg-gray-800 text-white"
+                      : "text-black hover:bg-gray-300"
+                  }`}
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                   }}
@@ -60,7 +58,7 @@ const Navbar = () => {
                   Mail
                 </NavLink>
                 <NavLink
-                  to="/kanban"
+                  to="/kanban/boards"
                   className={({ isActive }) =>
                     `flex justify-center px-4 py-2 text-[0.9rem] rounded-2xl ${
                       isActive
@@ -106,7 +104,7 @@ const Navbar = () => {
               <h1 className="text-[1rem]">Mail</h1>
             </NavLink>
             <NavLink
-              to="/kanban"
+              to="/kanban/boards"
               className={({ isActive }) =>
                 `flex justify-center px-4 py-2 rounded-4xl ${
                   isActive
