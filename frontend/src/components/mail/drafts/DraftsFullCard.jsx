@@ -142,18 +142,16 @@ const DraftsFullCard = ({ mail }) => {
             <div className="flex">
               <p className="w-16 text-[0.9rem] text-gray-700">To</p>
               <p className="text-[0.9rem]">
-                {mail.draftRecipients.map((r) => r.email)}
+                {mail.recipients.map((r) => r.user.email)}
               </p>
             </div>
             <div className="flex">
               <p className="w-16 text-[0.9rem] text-gray-700">Cc</p>
-              <p className="text-[0.9rem]">
-                {mail.draftCC.map((r) => r.email)}
-              </p>
+              <p className="text-[0.9rem]">{mail.cc.map((r) => r.user.email)}</p>
             </div>
             <div className="flex">
               <p className="w-16 text-[0.9rem] text-gray-700">Date</p>
-              <p className="text-[0.9rem]">{formatDate(mail.createdAt)}</p>
+              <p className="text-[0.9rem]">{formatDate(mail.updatedAt)}</p>
             </div>
           </div>
         )}
@@ -167,10 +165,10 @@ const DraftsFullCard = ({ mail }) => {
       </div>
       {/* Attachments */}
       <div className="grid sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-2 mb-6">
-        {mail.draftAttachments?.map((file, index) => (
+        {mail.attachments?.map((file, index) => (
           <div
             key={
-              file.public_id ||
+              file.publicId ||
               file.tempId ||
               `attachment-${index}-${file.filename}`
             }

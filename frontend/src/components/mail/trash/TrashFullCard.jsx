@@ -161,38 +161,26 @@ const TrashFullCard = ({ mail }) => {
             <div className="flex">
               <p className="w-16 text-[0.9rem] text-gray-700">To</p>
               <p className="text-[0.9rem]">
-                {mail.isDraft
-                  ? mail.draftRecipients.map((r, i) => (
-                      <span key={i} className="block">
-                        {r.email}
-                      </span>
-                    ))
-                  : mail.recipients.map((r, i) => (
-                      <span key={i} className="block">
-                        {r.user.email}
-                      </span>
-                    ))}
+                {mail.recipients.map((r, i) => (
+                  <span key={i} className="block">
+                    {r.user.email}
+                  </span>
+                ))}
               </p>
             </div>
             <div className="flex">
               <p className="w-16 text-[0.9rem] text-gray-700">Cc</p>
               <p className="text-[0.9rem]">
-                {mail.isDraft
-                  ? mail.draftCC.map((r, i) => (
-                      <span key={i} className="block">
-                        {r.email}
-                      </span>
-                    ))
-                  : mail.cc.map((r, i) => (
-                      <span key={i} className="block">
-                        {r.user.email}
-                      </span>
-                    ))}
+                {mail.cc.map((r, i) => (
+                  <span key={i} className="block">
+                    {r.user.email}
+                  </span>
+                ))}
               </p>
             </div>
             <div className="flex">
               <p className="w-16 text-[0.9rem] text-gray-700">Date</p>
-              <p className="text-[0.9rem]">{formatDate(mail.createdAt)}</p>
+              <p className="text-[0.9rem]">{formatDate(mail.updatedAt)}</p>
             </div>
           </div>
         )}
@@ -206,67 +194,33 @@ const TrashFullCard = ({ mail }) => {
       </div>
       {/* Attachments */}
       <div className="grid sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-2 mb-6">
-        {mail.isDraft
-          ? mail.draftAttachments?.map((file, index) => (
-              <div
-                key={
-                  file.public_id ||
-                  file.tempId ||
-                  `attachment-${index}-${file.filename}`
-                }
-                className="relative bg-gray-100 rounded-lg border border-gray-300 overflow-hidden"
+        {mail.attachments?.map((file, index) => (
+          <div
+            key={
+              file.public_id ||
+              file.tempId ||
+              `attachment-${index}-${file.filename}`
+            }
+            className="relative w-48 bg-gray-100 rounded-lg border border-gray-300 overflow-hidden"
+          >
+            <div className="flex items-center justify-between px-3 py-1">
+              <a
+                href={file.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="truncate max-w-[120px] text-[1rem] text-blue-600 hover:text-gray-500"
               >
-                <div className="flex items-center justify-between px-3 py-1">
-                  <a
-                    href={file.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="truncate text-[1rem] text-blue-600 hover:text-gray-500"
-                  >
-                    {file.filename || file.url.split("/").pop()}
-                  </a>
-                  <a
-                    href={file.url.replace(
-                      "/upload/",
-                      "/upload/fl_attachment/"
-                    )}
-                    className="text-[1rem] text-blue-600 hover:text-gray-500"
-                  >
-                    <LuArrowDownToLine />
-                  </a>
-                </div>
-              </div>
-            ))
-          : mail.attachments?.map((file, index) => (
-              <div
-                key={
-                  file.public_id ||
-                  file.tempId ||
-                  `attachment-${index}-${file.filename}`
-                }
-                className="relative w-48 bg-gray-100 rounded-lg border border-gray-300 overflow-hidden"
+                {file.filename || file.url.split("/").pop()}
+              </a>
+              <a
+                href={file.url.replace("/upload/", "/upload/fl_attachment/")}
+                className="text-[1rem] text-blue-600 hover:text-gray-500"
               >
-                <div className="flex items-center justify-between px-3 py-1">
-                  <a
-                    href={file.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="truncate max-w-[120px] text-[1rem] text-blue-600 hover:text-gray-500"
-                  >
-                    {file.filename || file.url.split("/").pop()}
-                  </a>
-                  <a
-                    href={file.url.replace(
-                      "/upload/",
-                      "/upload/fl_attachment/"
-                    )}
-                    className="text-[1rem] text-blue-600 hover:text-gray-500"
-                  >
-                    <LuArrowDownToLine />
-                  </a>
-                </div>
-              </div>
-            ))}
+                <LuArrowDownToLine />
+              </a>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

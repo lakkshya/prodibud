@@ -57,7 +57,7 @@ const MobileMailSmallCard = ({ mail }) => {
   };
 
   return (
-    <div className="flex justify-center gap-3 bg-white hover:scale-103 duration-200 p-3 rounded-xl">
+    <div className="flex justify-center gap-3 bg-white hover:scale-103 duration-200 p-3 rounded-xl border border-gray-200 shadow-xs">
       {/* Image */}
       <div
         className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-[0.9rem]"

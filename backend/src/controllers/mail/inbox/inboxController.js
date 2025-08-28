@@ -8,7 +8,11 @@ const getInboxMails = async (req, res) => {
   try {
     const [recipientMails, ccMails, bccMails] = await Promise.all([
       prisma.recipient.findMany({
-        where: { userId, isDeleted: false },
+        where: {
+          userId,
+          isDraft: false,
+          isDeleted: false,
+        },
         include: {
           email: {
             include: {
@@ -21,7 +25,11 @@ const getInboxMails = async (req, res) => {
       }),
 
       prisma.cCRecipient.findMany({
-        where: { userId, isDeleted: false },
+        where: {
+          userId,
+          isDraft: false,
+          isDeleted: false,
+        },
         include: {
           email: {
             include: {
@@ -34,7 +42,11 @@ const getInboxMails = async (req, res) => {
       }),
 
       prisma.bCCRecipient.findMany({
-        where: { userId, isDeleted: false },
+        where: {
+          userId,
+          isDraft: false,
+          isDeleted: false,
+        },
         include: {
           email: {
             include: {
@@ -142,6 +154,7 @@ const deleteInboxMail = async (req, res) => {
       where: {
         userId,
         emailId,
+        isDraft: false,
       },
       data: {
         isDeleted: true,
@@ -152,6 +165,7 @@ const deleteInboxMail = async (req, res) => {
       where: {
         userId,
         emailId,
+        isDraft: false,
       },
       data: {
         isDeleted: true,
@@ -162,6 +176,7 @@ const deleteInboxMail = async (req, res) => {
       where: {
         userId,
         emailId,
+        isDraft: false,
       },
       data: {
         isDeleted: true,

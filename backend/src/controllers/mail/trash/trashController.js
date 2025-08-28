@@ -18,16 +18,26 @@ const restoreEmailFromTrash = async (req, res) => {
     });
 
     if (draft) {
-      await prisma.email.updateMany({
-        where: {
-          id,
-          senderId: userId,
-          isDraft: true,
-          isDraftDeleted: true,
-        },
-        data: {
-          isDraftDeleted: false,
-        },
+      await prisma.$transaction(async (tx) => {
+        await tx.email.updateMany({
+          where: { id, senderId: userId, isDraft: true, isDraftDeleted: true },
+          data: { isDraftDeleted: false },
+        });
+
+        await tx.recipient.updateMany({
+          where: { emailId: id },
+          data: { isDeleted: false },
+        });
+
+        await tx.cCRecipient.updateMany({
+          where: { emailId: id },
+          data: { isDeleted: false },
+        });
+
+        await tx.bCCRecipient.updateMany({
+          where: { emailId: id },
+          data: { isDeleted: false },
+        });
       });
 
       return res
@@ -62,6 +72,7 @@ const restoreEmailFromTrash = async (req, res) => {
       where: {
         userId,
         emailId: id,
+        isDraft: false,
       },
       data: {
         isDeleted: false,
@@ -72,6 +83,7 @@ const restoreEmailFromTrash = async (req, res) => {
       where: {
         userId,
         emailId: id,
+        isDraft: false,
       },
       data: {
         isDeleted: false,
@@ -82,6 +94,7 @@ const restoreEmailFromTrash = async (req, res) => {
       where: {
         userId,
         emailId: id,
+        isDraft: false,
       },
       data: {
         isDeleted: false,
@@ -107,9 +120,11 @@ const getTrashEmails = async (req, res) => {
   try {
     const [recipientTrash, ccTrash, bccTrash, draftTrash, sentTrash] =
       await Promise.all([
+        //inbox recipients
         prisma.recipient.findMany({
           where: {
             userId,
+            isDraft: false,
             isDeleted: true,
           },
           include: {
@@ -127,9 +142,11 @@ const getTrashEmails = async (req, res) => {
           },
         }),
 
+        //inbox cc
         prisma.cCRecipient.findMany({
           where: {
             userId,
+            isDraft: false,
             isDeleted: true,
           },
           include: {
@@ -147,9 +164,11 @@ const getTrashEmails = async (req, res) => {
           },
         }),
 
+        //inbox bcc
         prisma.bCCRecipient.findMany({
           where: {
             userId,
+            isDraft: false,
             isDeleted: true,
           },
           include: {
@@ -167,9 +186,11 @@ const getTrashEmails = async (req, res) => {
           },
         }),
 
+        //draft
         prisma.email.findMany({
           where: {
             senderId: userId,
+            isDraft: true,
             isDraftDeleted: true,
           },
           include: {
@@ -182,9 +203,11 @@ const getTrashEmails = async (req, res) => {
           },
         }),
 
+        //sent
         prisma.email.findMany({
           where: {
             senderId: userId,
+            isDraft: false,
             isSentDeleted: true,
             isSentPermanentlyDeleted: false,
           },
@@ -199,7 +222,7 @@ const getTrashEmails = async (req, res) => {
         }),
       ]);
 
-    // Flatten and use updatedAt from recipient table
+    // Flatten
     const allTrash = [
       ...recipientTrash.map((r) => r.email),
       ...ccTrash.map((c) => c.email),
@@ -231,44 +254,16 @@ const getSingleTrashEmail = async (req, res) => {
         isDraftDeleted: true,
       },
       include: {
-        sender: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
+        sender: { select: { name: true, email: true } },
+        recipients: { select: { user: { select: { id: true, email: true } } } },
+        cc: { select: { user: { select: { id: true, email: true } } } },
+        bcc: { select: { user: { select: { id: true, email: true } } } },
         attachments: true,
       },
     });
 
     if (draft) {
-      //extract the IDs
-      const recipientIds = draft.draftRecipients;
-      const ccIds = draft.draftCC;
-      const bccIds = draft.draftBCC;
-
-      //fetch user info for those ids
-      const [recipientEmails, ccEmails, bccEmails] = await Promise.all([
-        prisma.user.findMany({
-          where: { id: { in: recipientIds } },
-          select: { id: true, email: true },
-        }),
-        prisma.user.findMany({
-          where: { id: { in: ccIds } },
-          select: { id: true, email: true },
-        }),
-        prisma.user.findMany({
-          where: { id: { in: bccIds } },
-          select: { id: true, email: true },
-        }),
-      ]);
-
-      return res.status(200).json({
-        ...draft,
-        draftRecipients: recipientEmails,
-        draftCC: ccEmails,
-        draftBCC: bccEmails,
-      });
+      return res.status(200).json(draft);
     }
 
     //check if it is a trashed sent mail
@@ -382,18 +377,21 @@ const deleteFromTrash = async (req, res) => {
         isDraft: true,
         isDraftDeleted: true,
       },
+      include: {
+        attachments: true,
+      },
     });
 
     if (draft) {
-      //delete attachments from cloudinary (from draftAttachments JSON)
-      if (draft.draftAttachments && Array.isArray(draft.draftAttachments)) {
-        for (const attachment of draft.draftAttachments) {
-          if (attachment.public_id) {
+      //delete attachments from cloudinary
+      if (draft.attachments && Array.isArray(draft.attachments)) {
+        for (const attachment of draft.attachments) {
+          if (attachment.publicId) {
             try {
-              await cloudinary.uploader.destroy(attachment.public_id);
+              await cloudinary.uploader.destroy(attachment.publicId);
             } catch (cloudErr) {
               console.error(
-                `Cloudinary delete failed for ${attachment.public_id}`,
+                `Cloudinary delete failed for ${attachment.publicId}`,
                 cloudErr
               );
             }
@@ -439,6 +437,7 @@ const deleteFromTrash = async (req, res) => {
       where: {
         emailId: id,
         userId,
+        isDraft: false,
       },
     });
 
@@ -446,6 +445,7 @@ const deleteFromTrash = async (req, res) => {
       where: {
         emailId: id,
         userId,
+        isDraft: false,
       },
     });
 
@@ -453,6 +453,7 @@ const deleteFromTrash = async (req, res) => {
       where: {
         emailId: id,
         userId,
+        isDraft: false,
       },
     });
 
