@@ -1,53 +1,53 @@
 import { useEffect, useState } from "react";
-import { useLocation, useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import axios from "axios";
+
+import Navbar from "../../components/Navbar";
+import Toast from "../../components/Toast";
+import MailNavbar from "../../components/mail/MailNavbar";
 import { LuArrowLeft } from "react-icons/lu";
+import MobileTrashList from "../../components/mail/trash/MobileTrashList";
+import TrashList from "../../components/mail/trash/TrashList";
+import TrashFullCard from "../../components/mail/trash/TrashFullCard";
 
-import Navbar from "../components/Navbar";
-import Toast from "../components/Toast";
-import MailNavbar from "../components/mail/MailNavbar";
-import SentList from "../components/mail/sent/SentList";
-import SentFullCard from "../components/mail/sent/SentFullCard";
-import MobileSentList from "../components/mail/sent/MobileSentList";
-
-const MailSent = () => {
+const Trash = () => {
   const location = useLocation();
   const { id } = useParams();
 
   const [toast, setToast] = useState(null);
-  const [sentMail, setSentMail] = useState([]);
-  const [selectedMail, setSelectedMail] = useState(null);
+  const [trashMail, setTrashMail] = useState([]);
+  const [selectedTrashMail, setSelectedTrashMail] = useState(null);
 
-  //fetch sent emails from backend API
+  //fetch trash emails from backend API
   useEffect(() => {
-    const fetchMail = async () => {
+    const fetchTrashMail = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/mail/sent", {
+        const res = await axios.get("http://localhost:5000/api/mail/trash", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
 
-        setSentMail(res.data);
+        setTrashMail(res.data);
       } catch (err) {
-        console.error("Failed to fetch sent:", err);
+        console.error("Failed to fetch trash:", err);
       }
     };
 
-    fetchMail();
+    fetchTrashMail();
   }, [location]);
 
   //fetch particular trash email from backend API
   useEffect(() => {
-    const fetchSingleMail = async () => {
+    const fetchSingleTrashMail = async () => {
       if (!id) {
-        setSelectedMail(null);
+        setSelectedTrashMail(null);
         return;
       }
 
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/mail/sent/${id}`,
+          `http://localhost:5000/api/mail/trash/${id}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -55,28 +55,28 @@ const MailSent = () => {
           }
         );
 
-        setSelectedMail(res.data);
+        setSelectedTrashMail(res.data);
       } catch (err) {
-        console.error("Failed to fetch single sent mail:", err);
+        console.error("Failed to fetch single trash mail:", err);
       }
     };
 
-    fetchSingleMail();
+    fetchSingleTrashMail();
   }, [id]);
 
   //show toast
   useEffect(() => {
     if (location.state?.toast) {
       setToast(location.state.toast);
-
-      window.history.replaceState({}, document.title);
     }
+
+    window.history.replaceState({}, document.title);
   }, [location.state]);
 
   const hideToast = () => setToast(null);
 
   return (
-    <div className="bg-white min-h-screen flex flex-col">
+    <div className="bg-gold-gradient min-h-screen flex flex-col">
       <Navbar />
       {/* Desktop */}
       <main className="hidden md:block h-[calc(100vh-80px)] p-5">
@@ -86,11 +86,11 @@ const MailSent = () => {
           </div>
 
           <div className="h-full bg-gray-100 col-span-3 overflow-y-auto">
-            <SentList data={sentMail} />
+            <TrashList data={trashMail} />
           </div>
 
           <div className="h-full bg-white col-span-5 overflow-y-auto">
-            <SentFullCard mail={selectedMail} />
+            <TrashFullCard mail={selectedTrashMail} />
           </div>
         </div>
       </main>
@@ -104,13 +104,13 @@ const MailSent = () => {
         >
           {id ? (
             <div className="bg-white py-2">
-              <Link to="/mail/sent" className="flex text-gray-500 p-2 ml-2">
+              <Link to="/mail/trash" className="flex text-gray-500 p-2 ml-2">
                 <LuArrowLeft className="w-5 h-5" />
               </Link>
-              <SentFullCard mail={selectedMail} />
+              <TrashFullCard mail={selectedTrashMail} />
             </div>
           ) : (
-            <MobileSentList data={sentMail} />
+            <MobileTrashList data={trashMail} />
           )}
         </div>
       </main>
@@ -121,4 +121,4 @@ const MailSent = () => {
   );
 };
 
-export default MailSent;
+export default Trash;

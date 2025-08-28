@@ -1,13 +1,13 @@
-import Navbar from "../components/Navbar";
+import Navbar from "../../components/Navbar";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import MailNavbar from "../components/mail/MailNavbar";
+import MailNavbar from "../../components/mail/MailNavbar";
 import { LuArrowLeft, LuMenu } from "react-icons/lu";
-import MobileMailNavbar from "../components/mail/MobileMailNavbar";
-import ComposeFullCard from "../components/mail/compose/ComposeFullCard";
+import MobileMailNavbar from "../../components/mail/MobileMailNavbar";
+import ComposeFullCard from "../../components/mail/compose/ComposeFullCard";
 
-const MailCompose = () => {
+const Compose = () => {
   //for changes inside compose
   const [isDirty, setIsDirty] = useState(false);
 
@@ -18,7 +18,7 @@ const MailCompose = () => {
       <Navbar />
       {/* Desktop */}
       <main className="hidden md:block h-[calc(100vh-80px)] p-5">
-        <div className="h-full grid grid-cols-10 rounded-4xl overflow-hidden border border-gray-200 shadow-md">
+        <div className="h-full grid grid-cols-10 rounded-2xl overflow-hidden border border-gray-200 shadow-md">
           <div className="h-full col-span-2 overflow-y-auto">
             <MailNavbar isDirty={isDirty} />
           </div>
@@ -75,4 +75,4 @@ const MailCompose = () => {
   );
 };
 
-export default MailCompose;
+export default Compose;

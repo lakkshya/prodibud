@@ -6,7 +6,7 @@ const {
   searchDraftMails,
   searchSentMails,
   searchTrashMails,
-} = require("../controllers/search/searchController");
+} = require("../controllers/mail/search/searchController");
 
 const protect = require("../middlewares/authMiddleware"); //middleware to check JWT
 
