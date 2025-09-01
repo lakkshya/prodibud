@@ -5,14 +5,15 @@ import { Link } from "react-router-dom";
 import KanbanNavbar from "../../components/kanban/KanbanNavbar";
 import { LuArrowLeft, LuMenu } from "react-icons/lu";
 import MobileKanbanNavbar from "../../components/kanban/MobileKanbanNavbar";
-import BoardsFullCard from "../../components/kanban/boards/BoardsFullCard";
+import CreateBoardFullCard from "../../components/kanban/createBoard/CreateBoardFullCard";
 
-const Boards = () => {
+const CreateBoard = () => {
   const [isMobileMailNavOpen, setIsMobileMailNavOpen] = useState(false);
 
   return (
     <div>
       <Navbar />
+
       {/* Desktop */}
       <main className="hidden md:block h-[calc(100vh-80px)] p-5">
         <div className="h-full grid grid-cols-10 rounded-2xl overflow-hidden border border-gray-200 shadow-md">
@@ -21,7 +22,7 @@ const Boards = () => {
           </div>
 
           <div className="h-full col-span-8 bg-white overflow-y-auto">
-            <BoardsFullCard />
+            <CreateBoardFullCard />
           </div>
         </div>
       </main>
@@ -50,7 +51,7 @@ const Boards = () => {
             <Link to="/mail/inbox" className="flex text-gray-500 p-2 ml-2">
               <LuArrowLeft className="w-5 h-5" />
             </Link>
-            <BoardsFullCard />
+            <CreateBoardFullCard />
           </div>
         </div>
       </main>
@@ -72,4 +73,4 @@ const Boards = () => {
   );
 };
 
-export default Boards;
+export default CreateBoard;
