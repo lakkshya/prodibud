@@ -1,21 +1,40 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+const validateMembers = async (req, res) => {
+  const { members = [] } = req.body;
+
+  try {
+    const users = await prisma.user.findMany({
+      where: { email: { in: members } },
+      select: { email: true, id: true },
+    });
+
+    const foundEmails = users.map((u) => u.email);
+    const emailMap = Object.fromEntries(users.map((u) => [u.email, u.id]));
+
+    //helper function to split valid and invalid email
+    const valid = members
+      .filter((email) => foundEmails.includes(email))
+      .map((email) => ({ email, id: emailMap[email] }));
+    const invalid = members.filter((email) => !foundEmails.includes(email));
+
+    res.json({ valid, invalid });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to validate email" });
+  }
+};
+
 const createBoard = async (req, res) => {
   const userId = req.user.id;
-  const { name, columns = [], members = [] } = req.body;
+  const { name, background, members = [] } = req.body;
 
   try {
     const board = await prisma.board.create({
       data: {
         name,
+        background,
         ownerId: userId,
-        columns: {
-          create: columns.map((col) => ({
-            name: col.name,
-            position: col.position,
-          })),
-        },
         members: {
           create: [
             //add owner as admin
@@ -55,11 +74,10 @@ const getAllBoards = async (req, res) => {
           },
         },
       },
-      include: {
-        columns: true,
-        members: {
-          include: { user: true },
-        },
+      select: {
+        id: true,
+        name: true,
+        background: true,
       },
     });
 
@@ -101,6 +119,7 @@ const getSingleBoard = async (req, res) => {
 };
 
 module.exports = {
+  validateMembers,
   createBoard,
   getAllBoards,
   getSingleBoard,

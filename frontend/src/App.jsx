@@ -10,6 +10,8 @@ import Compose from "./pages/mail/Compose";
 import Drafts from "./pages/mail/Drafts";
 import Sent from "./pages/mail/Sent";
 import Boards from "./pages/kanban/Boards";
+import CreateBoard from "./pages/kanban/CreateBoard";
+import SingleBoard from "./pages/kanban/SingleBoard";
 
 function App() {
   return (
@@ -99,10 +101,26 @@ function App() {
           }
         />
         <Route
+          path="/kanban/create-board"
+          element={
+            <ProtectedRoute>
+              <CreateBoard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/kanban/boards"
           element={
             <ProtectedRoute>
               <Boards />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/kanban/board/:id"
+          element={
+            <ProtectedRoute>
+              <SingleBoard />
             </ProtectedRoute>
           }
         />

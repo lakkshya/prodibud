@@ -89,16 +89,25 @@ model BCCRecipient {
     isDraft   Boolean  @default(false)
 }
 
+enum Gradient {
+    TEAL_BLUE
+    PURPLE_INDIGO
+    YELLOW_RED
+    PINK_PEACH
+    SKY_BLUE
+}
+
 model Board {
-    id        String        @id @default(uuid())
-    name      String
-    createdAt DateTime      @default(now())
-    updatedAt DateTime      @updatedAt
-    ownerId   String
-    owner     User          @relation(fields: [ownerId], references: [id])
+    id         String        @id @default(uuid())
+    name       String
+    background Gradient      @default(TEAL_BLUE)
+    createdAt  DateTime      @default(now())
+    updatedAt  DateTime      @updatedAt
+    ownerId    String
+    owner      User          @relation(fields: [ownerId], references: [id])
     //relations
-    columns   Column[]
-    members   BoardMember[]
+    columns    Column[]
+    members    BoardMember[]
 }
 
 model BoardMember {
