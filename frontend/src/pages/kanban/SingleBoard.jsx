@@ -16,12 +16,12 @@ const SingleBoard = () => {
 
       {/* Desktop */}
       <main className="hidden md:block h-[calc(100vh-80px)] p-5">
-        <div className="h-full grid grid-cols-10 rounded-2xl overflow-hidden border border-gray-200 shadow-md">
-          <div className="h-full col-span-2 overflow-y-auto">
+        <div className="h-full grid grid-cols-10 gap-3 overflow-hidden">
+          <div className="h-full col-span-2 rounded-2xl shadow-md overflow-y-auto">
             <KanbanNavbar />
           </div>
 
-          <div className="h-full col-span-8 bg-white overflow-y-auto">
+          <div className="h-full col-span-8 bg-white rounded-2xl shadow-md overflow-y-auto">
             <SingleBoardsFullCard />
           </div>
         </div>
