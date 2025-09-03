@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { NavLink, useParams } from "react-router-dom";
-import { LuEllipsis } from "react-icons/lu";
+import { useParams } from "react-router-dom";
+import { LuEllipsis, LuPlus, LuX } from "react-icons/lu";
+import ColumnCard from "../column/ColumnCard";
 
 const gradientMap = {
   TEAL_BLUE: "linear-gradient(to top, #37ecba 0%, #72afd3 100%)",
@@ -13,7 +14,13 @@ const gradientMap = {
 
 const SingleBoardsFullCard = () => {
   const { id } = useParams();
+  const boardMenuRef = useRef();
+
   const [boardData, setBoardData] = useState({});
+  const [isBoardMenuOpen, setIsBoardMenuOpen] = useState(false);
+  const [showCreateColumn, setShowCreateColumn] = useState(false);
+  const [columnName, setColumnName] = useState("");
+  const [columnData, setColumnData] = useState([]);
 
   useEffect(() => {
     const fetchBoard = async () => {
@@ -36,18 +43,57 @@ const SingleBoardsFullCard = () => {
     fetchBoard();
   }, [id]);
 
-  console.log(boardData);
-
   const handleInviteMembers = async () => {};
 
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const handleAddColumn = async () => {
+    try {
+      const res = await axios.post(
+        `http://localhost:5000/api/kanban/board/${boardData.id}/column`,
+        {
+          name: columnName,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
-  const mobileMenuRef = useRef();
+      setColumnData(res.data);
+      setColumnName("");
+      setShowCreateColumn(false);
+      console.log(columnData);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (!boardData?.id) return;
+
+    const fetchAllColumns = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/kanban/board/${boardData.id}/columns`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setColumnData(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchAllColumns();
+  }, [boardData.id]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target)) {
-        setIsMobileMenuOpen(false);
+      if (boardMenuRef.current && !boardMenuRef.current.contains(e.target)) {
+        setIsBoardMenuOpen(false);
       }
     };
 
@@ -57,12 +103,13 @@ const SingleBoardsFullCard = () => {
 
   return (
     <div
-      className="w-full h-full flex flex-col gap-5 bg-white px-5 py-2 md:py-5"
+      className="w-full h-full flex flex-col gap-5 bg-white"
       style={{ backgroundImage: gradientMap[boardData.background] }}
     >
-      <div className="flex justify-between">
+      {/* Header */}
+      <div className="flex justify-between items-center px-5 pt-5">
         <div className="flex items-center gap-3">
-          <h3 className="text-[1rem] text-white font-medium">
+          <h3 className="text-[1.2rem] text-white font-medium">
             {boardData.name}
           </h3>
         </div>
@@ -74,64 +121,104 @@ const SingleBoardsFullCard = () => {
             Invite
           </button>
 
-          <div className="relative" ref={mobileMenuRef}>
+          <div className="relative" ref={boardMenuRef}>
             <button
-              className="w-10 h-10 flex items-center justify-center hover:bg-gray-300/50 rounded-full cursor-pointer"
-              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              className={`w-10 h-10 flex items-center justify-center hover:bg-gray-300/50 rounded-xl cursor-pointer ${
+                isBoardMenuOpen ? "bg-gray-300/50" : ""
+              }`}
+              onClick={() => setIsBoardMenuOpen((prev) => !prev)}
             >
               <LuEllipsis className="text-[1.2rem] text-white" />
             </button>
 
-            {isMobileMenuOpen && (
-              <div className="w-30 absolute right-0 flex flex-col gap-1 mt-1 bg-white rounded-2xl shadow-lg p-1 z-50">
-                <NavLink
-                  to="/mail/inbox"
-                  className={({ isActive }) =>
-                    `flex justify-center px-4 py-2 text-[0.9rem] rounded-2xl ${
-                      isActive
-                        ? "bg-gray-800 text-white"
-                        : "text-black hover:bg-gray-300"
-                    }`
-                  }
+            {isBoardMenuOpen && (
+              <div className="w-50 absolute right-0 flex flex-col gap-1 mt-1 bg-white rounded-2xl shadow-lg p-1 z-50">
+                <button
+                  className={`flex px-4 py-2 text-[0.9rem] rounded-2xl text-black hover:bg-gray-300 cursor-pointer`}
                   onClick={() => {
-                    setIsMobileMenuOpen(false);
+                    setIsBoardMenuOpen(false);
                   }}
                 >
-                  Mail
-                </NavLink>
-                <NavLink
-                  to="/kanban/boards"
-                  className={({ isActive }) =>
-                    `flex justify-center px-4 py-2 text-[0.9rem] rounded-2xl ${
-                      isActive
-                        ? "bg-gray-800 text-white"
-                        : "text-black hover:bg-gray-300"
-                    }`
-                  }
+                  About board
+                </button>
+                <button
+                  className={`flex px-4 py-2 text-[0.9rem] rounded-2xl text-black hover:bg-gray-300 cursor-pointer`}
                   onClick={() => {
-                    setIsMobileMenuOpen(false);
+                    setIsBoardMenuOpen(false);
                   }}
                 >
-                  Kanban
-                </NavLink>
-                <NavLink
-                  to="/calendar"
-                  className={({ isActive }) =>
-                    `flex justify-center px-4 py-2 text-[0.9rem] rounded-2xl ${
-                      isActive
-                        ? "bg-gray-800 text-white"
-                        : "text-black hover:bg-gray-300"
-                    }`
-                  }
+                  Change background
+                </button>
+                <button
+                  className={`flex px-4 py-2 text-[0.9rem] rounded-2xl text-black hover:bg-gray-300 cursor-pointer`}
                   onClick={() => {
-                    setIsMobileMenuOpen(false);
+                    setIsBoardMenuOpen(false);
                   }}
                 >
-                  Calendar
-                </NavLink>
+                  Delete board
+                </button>
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      <div className="h-full flex gap-3 px-3 mb-2 overflow-x-auto">
+        {/* Render all columns */}
+        {columnData.length > 0 &&
+          columnData.map((col) => (
+            <div key={col.id} className="flex-shrink-0 w-72">
+              <ColumnCard
+                column={col}
+                onColumnDelete={(deletedId) =>
+                  setColumnData((prev) =>
+                    prev.filter((c) => c.id !== deletedId)
+                  )
+                }
+                onColumnRename={(renamedCol) =>
+                  setColumnData((prev) =>
+                    prev.map((c) => (c.id === renamedCol.id ? renamedCol : c))
+                  )
+                }
+              />
+            </div>
+          ))}
+
+        <div className="flex-shrink-0 w-72">
+          {showCreateColumn ? (
+            <div className="w-70 flex flex-col justify-center gap-2 bg-gray-200 p-3 rounded-xl">
+              <input
+                type="text"
+                name="columnName"
+                placeholder="Enter column name"
+                value={columnName}
+                onChange={(e) => setColumnName(e.target.value)}
+                className="text-gray-800 bg-white px-3 py-2 border border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-200 rounded-xl"
+              />
+              <div className="w-full flex items-center gap-1">
+                <button
+                  className="text-white bg-gray-800 hover:bg-gray-600 px-3 py-2 rounded-xl cursor-pointer"
+                  onClick={handleAddColumn}
+                >
+                  Add
+                </button>
+                <button
+                  className="hover:bg-gray-400 p-3 rounded-xl cursor-pointer"
+                  onClick={() => setShowCreateColumn(false)}
+                >
+                  <LuX className="w-4 h-4" strokeWidth={2} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              className="w-70 flex items-center gap-3 bg-gray-300/60 hover:bg-gray-300/50 p-3 rounded-xl cursor-pointer"
+              onClick={() => setShowCreateColumn(true)}
+            >
+              <LuPlus className="w-4 h-4 text-white" strokeWidth={3} />
+              <h4 className="text-white font-medium">Add a column</h4>
+            </button>
+          )}
         </div>
       </div>
     </div>
