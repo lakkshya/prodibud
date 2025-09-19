@@ -22,6 +22,7 @@ model User {
     bccEmails        BCCRecipient[]
     ownedBoards      Board[]
     boardMemberships BoardMember[]
+    CardMember       CardMember[]
 }
 
 model Email {
@@ -125,19 +126,29 @@ model Column {
     name     String
     position Int
     boardId  String
-    board    Board  @relation(fields: [boardId], references: [id])
+    board    Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
     //relations
     cards    Card[]
 }
 
 model Card {
-    id          String    @id @default(uuid())
+    id          String       @id @default(uuid())
     title       String
     description String?
     position    Int
     dueDate     DateTime?
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
+    createdAt   DateTime     @default(now())
+    updatedAt   DateTime     @updatedAt
     columnId    String
-    column      Column    @relation(fields: [columnId], references: [id])
+    column      Column       @relation(fields: [columnId], references: [id], onDelete: Cascade)
+    //relations
+    members     CardMember[]
+}
+
+model CardMember {
+    id     String @id @default(uuid())
+    cardId String
+    Card   Card   @relation(fields: [cardId], references: [id])
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
 }

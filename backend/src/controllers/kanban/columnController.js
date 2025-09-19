@@ -14,7 +14,7 @@ const createColumn = async (req, res) => {
     // New column's position = last position + 1 (or 1 if none exists)
     const newPosition = lastColumn ? lastColumn.position + 1 : 1;
 
-    await prisma.column.create({
+    const column = await prisma.column.create({
       data: {
         name,
         position: newPosition,
@@ -22,13 +22,7 @@ const createColumn = async (req, res) => {
       },
     });
 
-    //return fresh list for all clients
-    const columns = await prisma.column.findMany({
-      where: { boardId },
-      orderBy: { position: "asc" },
-    });
-
-    res.status(201).json(columns);
+    res.status(201).json(column);
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Failed to create column" });
