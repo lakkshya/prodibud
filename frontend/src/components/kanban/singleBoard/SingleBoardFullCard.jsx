@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { LuEllipsis, LuPlus, LuX } from "react-icons/lu";
 import ColumnCard from "../column/ColumnCard";
+import CardEditor from "../cards/CardEditor";
 
 const gradientMap = {
   TEAL_BLUE: "linear-gradient(to top, #37ecba 0%, #72afd3 100%)",
@@ -15,36 +16,60 @@ const gradientMap = {
 const SingleBoardsFullCard = () => {
   const { id } = useParams();
   const boardMenuRef = useRef();
+  const columnMenuRef = useRef();
+  const textareaRef = useRef(null);
 
   const [boardData, setBoardData] = useState({});
+  const [columnData, setColumnData] = useState([]);
+  const [cardData, setCardData] = useState([]);
+
   const [isBoardMenuOpen, setIsBoardMenuOpen] = useState(false);
   const [showCreateColumn, setShowCreateColumn] = useState(false);
-  const [columnName, setColumnName] = useState("");
-  const [columnData, setColumnData] = useState([]);
+  const [menuState, setMenuState] = useState({
+    columnId: null,
+    state: "closed",
+  });
 
+  const [columnName, setColumnName] = useState("");
+
+  const [cardDetails, setCardDetails] = useState({
+    name: "",
+    description: "",
+    dueDate: "",
+  });
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [activeColumn, setActiveColumn] = useState(null);
+
+  //board and card
   useEffect(() => {
-    const fetchBoard = async () => {
+    const fetchBoardAndCards = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/kanban/board/${id}`,
-          {
+        const [boardRes, cardsRes] = await Promise.all([
+          axios.get(`http://localhost:5000/api/kanban/board/${id}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
-          }
-        );
+          }),
+          axios.get(`http://localhost:5000/api/kanban/board/${id}/cards`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }),
+        ]);
 
-        setBoardData(res.data);
+        setBoardData(boardRes.data);
+        setCardData(cardsRes.data);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
 
-    fetchBoard();
+    fetchBoardAndCards();
   }, [id]);
 
   const handleInviteMembers = async () => {};
 
+  //column
   const handleAddColumn = async () => {
     try {
       const res = await axios.post(
@@ -59,12 +84,56 @@ const SingleBoardsFullCard = () => {
         }
       );
 
-      setColumnData(res.data);
+      setColumnData((prev) => [...prev, res.data]);
       setColumnName("");
       setShowCreateColumn(false);
-      console.log(columnData);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  // ✅ Delete column
+  const handleDeleteColumn = async (columnId) => {
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/kanban/column/${columnId}/delete`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      setColumnData((prev) => prev.filter((col) => col.id !== columnId));
+      setMenuState("closed");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // ✅ Rename column
+  const handleRenameColumn = async (columnId, newColumnName) => {
+    if (!newColumnName.trim()) return; // prevent empty name
+
+    try {
+      const res = await axios.put(
+        `http://localhost:5000/api/kanban/column/${columnId}/rename`,
+        { name: newColumnName.trim() },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      setColumnData((prev) =>
+        prev.map((col) =>
+          col.id === columnId ? { ...col, name: res.data.name } : col
+        )
+      );
+      setMenuState("closed");
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -90,6 +159,55 @@ const SingleBoardsFullCard = () => {
     fetchAllColumns();
   }, [boardData.id]);
 
+  // ✅ Add card
+  const handleAddCard = async (columnId) => {
+    if (!cardDetails.name.trim()) return; // prevent empty title
+
+    try {
+      const res = await axios.post(
+        `http://localhost:5000/api/kanban/column/${columnId}/card`,
+        {
+          title: cardDetails.name.trim(),
+          description: cardDetails.description || "",
+          dueDate: cardDetails.dueDate
+            ? new Date(cardDetails.dueDate).toISOString()
+            : null,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      setCardData((prev) => [...prev, res.data]);
+      setCardDetails({ name: "", description: "", dueDate: null });
+      setActiveColumn(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // ✅ Auto-resize textarea in CardCreator
+  const adjustTextareaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      const lineHeight = 24;
+      const maxLines = 6;
+      const maxHeight = lineHeight * maxLines;
+
+      const newHeight = Math.min(textareaRef.current.scrollHeight, maxHeight);
+      textareaRef.current.style.height = newHeight + "px";
+
+      textareaRef.current.style.overflowY =
+        textareaRef.current.scrollHeight > maxHeight ? "auto" : "hidden";
+    }
+  };
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [cardDetails.name]);
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (boardMenuRef.current && !boardMenuRef.current.contains(e.target)) {
@@ -100,6 +218,20 @@ const SingleBoardsFullCard = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // ✅ Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (columnMenuRef.current && !columnMenuRef.current.contains(e.target)) {
+        setMenuState("closed");
+      }
+    };
+
+    if (menuState !== "closed") {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuState]);
 
   return (
     <div
@@ -170,16 +302,19 @@ const SingleBoardsFullCard = () => {
             <div key={col.id} className="flex-shrink-0 w-72">
               <ColumnCard
                 column={col}
-                onColumnDelete={(deletedId) =>
-                  setColumnData((prev) =>
-                    prev.filter((c) => c.id !== deletedId)
-                  )
-                }
-                onColumnRename={(renamedCol) =>
-                  setColumnData((prev) =>
-                    prev.map((c) => (c.id === renamedCol.id ? renamedCol : c))
-                  )
-                }
+                menuState={menuState}
+                setMenuState={setMenuState}
+                columnMenuRef={columnMenuRef}
+                handleDeleteColumn={handleDeleteColumn}
+                handleRenameColumn={handleRenameColumn}
+                textareaRef={textareaRef}
+                cardData={cardData.filter((card) => card.columnId === col.id)}
+                cardDetails={cardDetails}
+                setCardDetails={setCardDetails}
+                handleAddCard={handleAddCard}
+                onCardClick={(card) => setSelectedCard(card)}
+                activeColumn={activeColumn}
+                setActiveColumn={setActiveColumn}
               />
             </div>
           ))}
@@ -221,6 +356,20 @@ const SingleBoardsFullCard = () => {
           )}
         </div>
       </div>
+      {selectedCard && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="w-2/3 h-2/3 bg-white rounded-2xl shadow-xl">
+            <CardEditor
+              card={selectedCard}
+              onClose={() => setSelectedCard(null)}
+              onCardDelete={(deletedId) =>
+                setCardData((prev) => prev.filter((c) => c.id !== deletedId))
+              }
+              columns={columnData}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

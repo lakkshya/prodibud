@@ -118,9 +118,28 @@ const getSingleBoard = async (req, res) => {
   }
 };
 
+const getBoardMembers = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const boardMembers = await prisma.boardMember.findMany({
+      where: { boardId: id },
+      include: {
+        user: true,
+      },
+    });
+
+    res.status(200).json(boardMembers);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch board members" });
+  }
+};
+
 module.exports = {
   validateMembers,
   createBoard,
   getAllBoards,
   getSingleBoard,
+  getBoardMembers,
 };
